@@ -1,22 +1,25 @@
 import React, { Component } from 'react';
-import logo from '../logo.svg';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Layout from './layout';
 import '../app.css';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/components/app.js</code> and save to
-          reload.
-        </p>
-      </div>
+      <Layout>
+        <Router>
+          <Switch>
+            <Route exact path="/" render={this.homePage} />
+            <Route render={this.notFoundPage} />
+          </Switch>
+        </Router>
+      </Layout>
     );
   }
+
+  homePage = () => <div>Home Page</div>;
+
+  notFoundPage = () => <h2 class="app-message">404 Page not found</h2>;
 }
 
 export default App;
