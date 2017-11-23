@@ -7,23 +7,3 @@ body {
 :root {
   font-size: 16px;
 }
-
-/* TODO: delete these later */
-
-header,
-footer {
-  padding: 0.5rem;
-}
-header {
-  background: #bdd;
-}
-footer {
-  background: #dbd;
-}
-.content {
-  background: #ddb;
-  padding: 2rem;
-}
-.container {
-  background: #ddd;
-}
