@@ -1,24 +1,19 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Layout from './layout';
+import Store from './store';
+import HomePage from './home-page';
+import NotFoundPage from './not-found-page';
 
-class App extends Component {
-  render() {
-    return (
-      <Layout>
-        <Router>
-          <Switch>
-            <Route exact path="/" render={this.homePage} />
-            <Route render={this.notFoundPage} />
-          </Switch>
-        </Router>
-      </Layout>
-    );
-  }
-
-  homePage = () => <div>Home Page</div>;
-
-  notFoundPage = () => <h2 className="app-message">404 Page not found</h2>;
-}
-
-export default App;
+export default () => (
+  <Layout>
+    <Store>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route path="*" component={NotFoundPage} />
+        </Switch>
+      </Router>
+    </Store>
+  </Layout>
+);

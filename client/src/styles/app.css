@@ -7,3 +7,7 @@ body {
 :root {
   font-size: 16px;
 }
+
+.app-message {
+  text-align: center;
+}
