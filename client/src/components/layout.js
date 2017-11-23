@@ -1,11 +1,9 @@
 import React from 'react';
 
 export default props => (
-  <div>
-    <header>
-      <h1>Readable</h1>
-    </header>
-    {props.children}
+  <div className="container">
+    <header>readable</header>
+    <div className="content">{props.children}</div>
     <footer>footer</footer>
   </div>
 );

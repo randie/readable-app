@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Layout from './layout';
-import '../app.css';
 
 class App extends Component {
   render() {
@@ -19,7 +18,7 @@ class App extends Component {
 
   homePage = () => <div>Home Page</div>;
 
-  notFoundPage = () => <h2 class="app-message">404 Page not found</h2>;
+  notFoundPage = () => <h2 className="app-message">404 Page not found</h2>;
 }
 
 export default App;
