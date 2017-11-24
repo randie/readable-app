@@ -6,14 +6,14 @@ import HomePage from './home-page';
 import NotFoundPage from './not-found-page';
 
 export default () => (
-  <Layout>
-    <Store>
+  <Store>
+    <Layout>
       <Router>
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="*" component={NotFoundPage} />
         </Switch>
       </Router>
-    </Store>
-  </Layout>
+    </Layout>
+  </Store>
 );
