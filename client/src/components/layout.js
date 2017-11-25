@@ -9,12 +9,11 @@ const menuStyle = {
 
 const imageStyle = {
   width: '40px',
-  marginRight: '1rem',
+  marginRight: '0.5rem',
 };
 
 const logoStyle = {
   fontSize: '1.2rem',
-  fontWeight: '500',
   fontFamily: 'verdana',
   border: 'none',
 };
@@ -29,19 +28,36 @@ class Layout extends Component {
   }
 
   render() {
-    const { categories, children } = this.props;
+    const {
+      categories,
+      children,
+      selectedCategory,
+      onSelectCategory,
+    } = this.props;
+
     return (
       <div>
         <Menu fixed="top" style={menuStyle}>
           <Container>
             <Menu.Item style={logoStyle}>
               <Image size="mini" src="/readable-logo.svg" style={imageStyle} />
-              readable
+              Readable
             </Menu.Item>
-            <Menu.Item as="a">All</Menu.Item>
+            <Menu.Item
+              as="a"
+              active={!selectedCategory}
+              onClick={() => onSelectCategory('/')}
+            >
+              all
+            </Menu.Item>
             {categories.map(category => (
-              <Menu.Item as="a" key={category}>
-                {category}
+              <Menu.Item
+                as="a"
+                active={selectedCategory === category.name}
+                onClick={() => onSelectCategory(`/${category.path}`)}
+                key={category.name}
+              >
+                {category.name}
               </Menu.Item>
             ))}
           </Container>
@@ -56,4 +72,5 @@ const mapStateToProps = ({ categories }) => ({ categories });
 const mapDispatchToProps = dispatch => ({
   fetchCategories: () => dispatch(fetchCategories()),
 });
+
 export default connect(mapStateToProps, mapDispatchToProps)(Layout);

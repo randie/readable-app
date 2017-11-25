@@ -10,4 +10,23 @@ body {
 
 .app-message {
   text-align: center;
+  padding: 2rem;
+}
+
+/* override semantic-ui styles here for now */
+
+.ui.cards > .card > .content > .header {
+  color: #6688dd;
+}
+
+.ui .button-new-post {
+  float: right;
+}
+
+.ui .sort-by {
+  margin-right: 0.5rem;
+}
+
+.ui .card .content span {
+  margin-right: 1rem;
 }
