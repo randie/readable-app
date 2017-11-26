@@ -12,7 +12,19 @@ class HomePage extends Component {
 
   handleItemClick = location => (event, { name }) => {
     this.setState({ activeItem: name });
+
+    // NB: Making a Menu.Item Link to the new location works
+    // but the UI "blinks" when location changes, so I'm doing
+    // this instead until I can figure out why Link-ing makes
+    // the page "blink". See menu-item-with-link-to branch.
     this.props.history.push(location);
+  };
+
+  fetchDataForPage = () => {
+    // TODO: Should these 3 action creators be combined into 1?
+    this.props.fetchCategories();
+    this.props.fetchPosts(this.props.match.params.category);
+    this.props.sortPosts('voteScore');
   };
 
   menuBar = () => {
@@ -93,9 +105,7 @@ class HomePage extends Component {
 
   componentWillMount() {
     this.setState({ activeItem: this.props.match.params.category || 'all' });
-    this.props.fetchCategories();
-    this.props.fetchPosts(this.props.match.params.category);
-    this.props.sortPosts('voteScore');
+    this.fetchDataForPage();
   }
 
   /*
@@ -108,9 +118,7 @@ class HomePage extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.match.url !== prevProps.match.url) {
-      this.props.fetchCategories();
-      this.props.fetchPosts(this.props.match.params.category);
-      this.props.sortPosts('voteScore');
+      this.fetchDataForPage();
     }
   }
 
