@@ -91,10 +91,27 @@ class HomePage extends Component {
     );
   };
 
+  componentWillMount() {
+    this.setState({ activeItem: this.props.match.params.category || 'all' });
+    this.props.fetchCategories();
+    this.props.fetchPosts(this.props.match.params.category);
+    this.props.sortPosts('voteScore');
+  }
+
+  /*
   componentDidMount() {
     this.props.fetchCategories();
-    this.props.fetchPosts();
+    this.props.fetchPosts(this.props.match.params.category);
     this.props.sortPosts('voteScore');
+  }
+  */
+
+  componentDidUpdate(prevProps) {
+    if (this.props.match.url !== prevProps.match.url) {
+      this.props.fetchCategories();
+      this.props.fetchPosts(this.props.match.params.category);
+      this.props.sortPosts('voteScore');
+    }
   }
 
   render() {
@@ -111,7 +128,7 @@ const mapStateToProps = ({ categories, posts }) => ({ categories, posts });
 
 const mapDispatchToProps = dispatch => ({
   fetchCategories: () => dispatch(fetchCategories()),
-  fetchPosts: () => dispatch(fetchPosts()),
+  fetchPosts: category => dispatch(fetchPosts(category)),
   sortPosts: sortBy => dispatch(sortPosts(sortBy)),
 });
 
