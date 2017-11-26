@@ -1,13 +1,63 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import { Card, Icon } from 'semantic-ui-react';
-import Layout from './layout';
-import { fetchPosts } from '../actions';
+import { fetchCategories, fetchPosts } from '../actions';
+import {
+  Button,
+  Card,
+  Container,
+  Dropdown,
+  Icon,
+  Menu,
+} from 'semantic-ui-react';
 
+const menuBarStyle = {
+  marginBottom: '3rem',
+};
 class HomePage extends Component {
-  selectCategory = location => {
+  state = { activeItem: 'all' };
+
+  handleItemClick = location => (event, { name }) => {
+    this.setState({ activeItem: name });
     this.props.history.push(location);
+  };
+
+  menuBar = () => {
+    const { activeItem } = this.state;
+    const { categories } = this.props;
+
+    return (
+      <Menu size="tiny" style={menuBarStyle}>
+        <Menu.Item
+          name="all"
+          active={activeItem === 'all'}
+          onClick={this.handleItemClick('/')}
+        />
+        {categories.map(category => (
+          <Menu.Item
+            name={category.name}
+            active={category.name === activeItem}
+            onClick={this.handleItemClick(`/${category.path}`)}
+            key={category.name}
+          />
+        ))}
+
+        <Menu.Menu position="right">
+          <Dropdown item text="Sort by">
+            <Dropdown.Menu>
+              <Dropdown.Item disabled>author</Dropdown.Item>
+              <Dropdown.Item>date</Dropdown.Item>
+              <Dropdown.Item disabled>title</Dropdown.Item>
+              <Dropdown.Item>votes</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+
+          <Menu.Item>
+            <Button primary>New Post</Button>
+          </Menu.Item>
+        </Menu.Menu>
+      </Menu>
+    );
   };
 
   postCards = () => {
@@ -45,24 +95,24 @@ class HomePage extends Component {
   };
 
   componentDidMount() {
+    this.props.fetchCategories();
     this.props.fetchPosts();
   }
 
   render() {
-    const selectedCategory = this.props.match.params.category;
     return (
-      <Layout
-        selectedCategory={selectedCategory}
-        onSelectCategory={this.selectCategory}
-      >
+      <div>
+        {this.menuBar()}
         {this.postCards()}
-      </Layout>
+      </div>
     );
   }
 }
 
-const mapStateToProps = ({ posts }) => ({ posts });
+const mapStateToProps = ({ categories, posts }) => ({ categories, posts });
+
 const mapDispatchToProps = dispatch => ({
+  fetchCategories: () => dispatch(fetchCategories()),
   fetchPosts: () => dispatch(fetchPosts()),
 });
 

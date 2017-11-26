@@ -1,76 +1,27 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Container, Menu, Image } from 'semantic-ui-react';
-import { fetchCategories } from '../actions';
+import React from 'react';
+import { Container, Image } from 'semantic-ui-react';
 
-const menuStyle = {
-  height: '3.4rem',
+const logoStyle = {
+  color: '#666',
+  fontSize: '1.6rem',
+  fontFamily: 'verdana',
+  marginTop: '2rem',
+  marginBottom: '2rem',
 };
 
 const imageStyle = {
   width: '40px',
+  display: 'inline-block',
   marginRight: '0.5rem',
+  marginTop: '-5px',
 };
 
-const logoStyle = {
-  fontSize: '1.2rem',
-  fontFamily: 'verdana',
-  border: 'none',
-};
-
-const contentStyle = {
-  marginTop: '6rem',
-};
-
-class Layout extends Component {
-  componentDidMount() {
-    this.props.fetchCategories();
-  }
-
-  render() {
-    const {
-      categories,
-      children,
-      selectedCategory,
-      onSelectCategory,
-    } = this.props;
-
-    return (
-      <div>
-        <Menu fixed="top" style={menuStyle}>
-          <Container>
-            <Menu.Item style={logoStyle}>
-              <Image size="mini" src="/readable-logo.svg" style={imageStyle} />
-              Readable
-            </Menu.Item>
-            <Menu.Item
-              as="a"
-              active={!selectedCategory}
-              onClick={() => onSelectCategory('/')}
-            >
-              all
-            </Menu.Item>
-            {categories.map(category => (
-              <Menu.Item
-                as="a"
-                active={selectedCategory === category.name}
-                onClick={() => onSelectCategory(`/${category.path}`)}
-                key={category.name}
-              >
-                {category.name}
-              </Menu.Item>
-            ))}
-          </Container>
-        </Menu>
-        <Container style={contentStyle}>{children}</Container>
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = ({ categories }) => ({ categories });
-const mapDispatchToProps = dispatch => ({
-  fetchCategories: () => dispatch(fetchCategories()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Layout);
+export default props => (
+  <div>
+    <Container style={logoStyle}>
+      <Image size="mini" src="/readable-logo.svg" style={imageStyle} />
+      <span>readable</span>
+    </Container>
+    <Container>{props.children}</Container>
+  </div>
+);
