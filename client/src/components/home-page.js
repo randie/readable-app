@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import { fetchPosts } from '../actions';
+import { fetchCategories, fetchPosts } from '../actions';
 import {
   Button,
   Card,
@@ -12,41 +12,37 @@ import {
 } from 'semantic-ui-react';
 
 class HomePage extends Component {
-  state = { activeItem: 'home' };
+  state = { activeItem: 'all' };
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+  handleItemClick = location => (event, { name }) => {
+    this.setState({ activeItem: name });
+    this.props.history.push(location);
+  };
+
+  componentDidMount() {
+    this.props.fetchCategories();
+  }
 
   render() {
     const { activeItem } = this.state;
+    const { categories } = this.props;
 
     return (
       <div>
         <Menu size="tiny">
           <Menu.Item
-            name="All"
-            active={activeItem === 'home'}
-            onClick={this.handleItemClick}
+            name="all"
+            active={activeItem === 'all'}
+            onClick={this.handleItemClick('/')}
           />
-          <Menu.Item
-            name="react"
-            active={activeItem === 'react'}
-            onClick={this.handleItemClick}
-          />
-          <Menu.Item
-            name="redux"
-            active={activeItem === 'redux'}
-            onClick={this.handleItemClick}
-          />
-          <Menu.Item
-            name="udacity"
-            active={activeItem === 'udacity'}
-            onClick={this.handleItemClick}
-          />
-          <Menu.Item
-            name="javascript"
-            active={activeItem === 'javascript'}
-            onClick={this.handleItemClick}
-          />
+          {categories.map(category => (
+            <Menu.Item
+              name={category.name}
+              active={category.name === activeItem}
+              onClick={this.handleItemClick(`/${category.path}`)}
+              key={category.name}
+            />
+          ))}
 
           <Menu.Menu position="right">
             <Dropdown item text="Sort by">
@@ -69,8 +65,9 @@ class HomePage extends Component {
 }
 //<Button content="New Post" icon="add" labelPosition="left" primary />;
 
-const mapStateToProps = ({ posts }) => ({ posts });
+const mapStateToProps = ({ categories, posts }) => ({ categories, posts });
 const mapDispatchToProps = dispatch => ({
+  fetchCategories: () => dispatch(fetchCategories()),
   fetchPosts: () => dispatch(fetchPosts()),
 });
 
