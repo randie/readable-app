@@ -1,15 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import { fetchCategories, fetchPosts } from '../actions';
-import {
-  Button,
-  Card,
-  Container,
-  Dropdown,
-  Icon,
-  Menu,
-} from 'semantic-ui-react';
+import { fetchCategories, fetchPosts, sortPosts } from '../actions';
+import { Button, Card, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
 const menuBarStyle = {
   marginBottom: '3rem',
@@ -24,7 +17,7 @@ class HomePage extends Component {
 
   menuBar = () => {
     const { activeItem } = this.state;
-    const { categories } = this.props;
+    const { categories, sortPosts } = this.props;
 
     return (
       <Menu size="tiny" style={menuBarStyle}>
@@ -45,10 +38,14 @@ class HomePage extends Component {
         <Menu.Menu position="right">
           <Dropdown item text="Sort by">
             <Dropdown.Menu>
+              <Dropdown.Item onClick={() => sortPosts('timestamp')}>
+                date
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => sortPosts('voteScore')}>
+                votes
+              </Dropdown.Item>
               <Dropdown.Item disabled>author</Dropdown.Item>
-              <Dropdown.Item>date</Dropdown.Item>
               <Dropdown.Item disabled>title</Dropdown.Item>
-              <Dropdown.Item>votes</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
 
@@ -97,6 +94,7 @@ class HomePage extends Component {
   componentDidMount() {
     this.props.fetchCategories();
     this.props.fetchPosts();
+    this.props.sortPosts('voteScore');
   }
 
   render() {
@@ -114,6 +112,7 @@ const mapStateToProps = ({ categories, posts }) => ({ categories, posts });
 const mapDispatchToProps = dispatch => ({
   fetchCategories: () => dispatch(fetchCategories()),
   fetchPosts: () => dispatch(fetchPosts()),
+  sortPosts: sortBy => dispatch(sortPosts(sortBy)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
