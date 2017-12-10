@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { fetchCategories, fetchPosts, sortPosts } from '../actions';
@@ -6,6 +7,10 @@ import { Button, Card, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
 const menuBarStyle = {
   marginBottom: '3rem',
+};
+
+const linkStyle = {
+  float: 'right',
 };
 class HomePage extends Component {
   state = { activeItem: 'all' };
@@ -15,8 +20,7 @@ class HomePage extends Component {
 
     // NB: Making a Menu.Item Link to the new location works
     // but the UI "blinks" when location changes, so I'm doing
-    // this instead until I can figure out why Link-ing makes
-    // the page "blink". See menu-item-with-link-to branch.
+    // this instead. See menu-item-with-link-to branch.
     this.props.history.push(location);
   };
 
@@ -32,10 +36,10 @@ class HomePage extends Component {
     const { categories, sortPosts } = this.props;
 
     return (
-      <Menu size="tiny" style={menuBarStyle}>
+      <Menu size="small" style={menuBarStyle}>
         <Menu.Item
           name="all"
-          active={activeItem === 'all'}
+          active={!this.props.match.params.category}
           onClick={this.handleItemClick('/')}
         />
         {categories.map(category => (
@@ -78,15 +82,22 @@ class HomePage extends Component {
           {posts.map(post => (
             <Card centered key={post.id}>
               <Card.Content>
-                <Card.Header>{post.title}</Card.Header>
-                <Card.Meta>{moment(post.timestamp).format('ll LT')}</Card.Meta>
+                <Card.Header>
+                  <Link to={`/${post.category}/${post.id}`}>{post.title}</Link>
+                </Card.Header>
               </Card.Content>
-              <Card.Content description={post.body} />
-              <Card.Content>
+              <Card.Content extra>
                 <span>
-                  <Icon disabled name="user" />
+                  <Icon name="user" />
                   {post.author}
                 </span>
+                <span>
+                  <Icon name="calendar outline" />
+                  {moment(post.timestamp).format('ll LT')}
+                </span>
+              </Card.Content>
+              <Card.Content description={post.body.slice(0, 200)} />
+              <Card.Content>
                 <span>
                   <Icon disabled name="tag" />
                   {post.category}
@@ -94,6 +105,15 @@ class HomePage extends Component {
                 <span>
                   <Icon disabled name="thumbs up" />
                   {post.voteScore}
+                </span>
+                <span>
+                  <Icon disabled name="comment" />
+                  {post.commentCount}
+                </span>
+                <span>
+                  <Link to={`/${post.category}/${post.id}`} style={linkStyle}>
+                    More <Icon name="arrow right" />
+                  </Link>
                 </span>
               </Card.Content>
             </Card>
@@ -104,7 +124,7 @@ class HomePage extends Component {
   };
 
   componentWillMount() {
-    this.setState({ activeItem: this.props.match.params.category || 'all' });
+    this.setState({ activeItem: this.props.match.params.category });
     this.fetchDataForPage();
   }
 
@@ -119,6 +139,7 @@ class HomePage extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.match.url !== prevProps.match.url) {
       this.fetchDataForPage();
+      this.setState({ activeItem: this.props.match.params.category });
     }
   }
 
