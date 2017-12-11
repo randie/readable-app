@@ -5,6 +5,8 @@ import Layout from './layout';
 import HomePage from './home-page';
 import PostPage from './post-page';
 import NotFoundPage from './not-found-page';
+import 'semantic-ui-css/semantic.min.css';
+import '../styles/app.css';
 
 export default () => (
   <Store>

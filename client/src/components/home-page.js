@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 import { fetchCategories, fetchPosts, sortPosts } from '../actions';
 import { Button, Card, Dropdown, Icon, Menu } from 'semantic-ui-react';
@@ -130,6 +131,14 @@ function PostCards({ posts }) {
 }
 
 class HomePage extends Component {
+  static propTypes = {
+    categories: PropTypes.array,
+    posts: PropTypes.array,
+    fetchCategories: PropTypes.func.isRequired,
+    fetchPosts: PropTypes.func.isRequired,
+    sortPosts: PropTypes.func.isRequired,
+  };
+
   componentDidMount() {
     this.fetchDataForPage();
   }
