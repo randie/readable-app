@@ -4,7 +4,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { fetchCategories, fetchPosts, sortPosts } from '../actions';
-import { Button, Card, Dropdown, Icon, Menu } from 'semantic-ui-react';
+import {
+  Button,
+  Card,
+  Container,
+  Dropdown,
+  Icon,
+  Menu,
+} from 'semantic-ui-react';
 
 const menuBarStyle = {
   marginBottom: '3rem',
@@ -157,10 +164,10 @@ class HomePage extends Component {
 
   render() {
     return (
-      <div>
+      <Container>
         <MenuBar {...this.props} />
         <PostCards posts={this.props.posts} />
-      </div>
+      </Container>
     );
   }
 }

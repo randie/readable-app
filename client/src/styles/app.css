@@ -15,6 +15,24 @@ body {
 
 /* override semantic-ui styles here for now */
 
-.ui .card .content span + span {
+.post-meta span + span,
+.ui.card .content span + span {
   margin-left: 1.5rem;
+}
+
+.post-meta {
+  margin: -1rem 0 1rem;
+}
+
+.ui .divider {
+  margin-bottom: 2rem;
+}
+
+.ui .edit-delete-thumbs {
+  margin-bottom: 2rem;
+  width: 80%;
+}
+
+.ui .edit-delete-thumbs button {
+  text-align: left;
 }

@@ -25,6 +25,6 @@ export default props => (
         <span>readable</span>
       </Link>
     </Container>
-    <Container>{props.children}</Container>
+    {props.children}
   </div>
 );
