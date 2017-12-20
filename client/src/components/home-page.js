@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { isEmpty } from 'lodash';
 import { fetchCategories, fetchPosts, sortPosts } from '../actions';
 import {
   Button,
@@ -89,9 +90,8 @@ class MenuBar extends Component {
 
 // This is a private component used only by the HomePage component
 function PostCards({ posts }) {
-  debugger;
   return (
-    (!posts.length && 'No posts found.') || (
+    (isEmpty(posts) && 'No posts found.') || (
       <Card.Group itemsPerRow={3}>
         {posts.map(post => (
           <Card centered key={post.id}>

@@ -1,6 +1,6 @@
 import { DELETE_POST, FETCH_POST, VOTE_FOR_POST } from '../actions';
 
-// redux-promise-middleware returns a new action with "_FULFillED"
+// redux-promise-middleware returns a new action with "_FULFILLED"
 // tacked on to the original action type when the promise for a
 // payload is fulfilled.
 const DELETE_POST_FULFILLED = `${DELETE_POST}_FULFILLED`;

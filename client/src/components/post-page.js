@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { deletePost, fetchPost, voteForPost } from '../actions';
+import { isEmpty } from 'lodash';
+import Comments from './comments';
+import { deletePost, fetchComments, fetchPost, voteForPost } from '../actions';
 import {
   Button,
   Container,
@@ -15,7 +17,10 @@ import {
 class Post extends Component {
   static propTypes = {
     post: PropTypes.object,
+    deletePost: PropTypes.func.isRequired,
+    fetchComments: PropTypes.func.isRequired,
     fetchPost: PropTypes.func.isRequired,
+    voteForPost: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
@@ -29,8 +34,13 @@ class Post extends Component {
   }
 
   fetchDataForPage() {
-    const { postId } = this.props.match.params;
-    this.props.fetchPost(postId);
+    const {
+      fetchPost,
+      fetchComments,
+      match: { params: { postId } },
+    } = this.props;
+    fetchPost(postId);
+    fetchComments(postId);
   }
 
   deletePost = () => {
@@ -40,10 +50,11 @@ class Post extends Component {
 
   render() {
     const { post } = this.props;
+
     return (
       <Container>
         <Divider />
-        {post && (
+        {!isEmpty(post) && (
           <Grid>
             <Grid.Column width={12}>
               <Header as="h2">{post.title}</Header>
@@ -70,6 +81,7 @@ class Post extends Component {
                 </span>
               </div>
               <p>{post.body}</p>
+              <Comments />
             </Grid.Column>
             <Grid.Column width={4}>
               <Button.Group
@@ -110,6 +122,7 @@ const mapStateToProps = ({ post }) => ({ post });
 
 const mapDispatchToProps = dispatch => ({
   deletePost: postId => dispatch(deletePost(postId)),
+  fetchComments: postId => dispatch(fetchComments(postId)),
   fetchPost: postId => dispatch(fetchPost(postId)),
   voteForPost: (postId, voteType) => dispatch(voteForPost(postId, voteType)),
 });
