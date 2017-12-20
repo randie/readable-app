@@ -89,9 +89,9 @@ class MenuBar extends Component {
 
 // This is a private component used only by the HomePage component
 function PostCards({ posts }) {
+  debugger;
   return (
-    posts &&
-    posts.length && (
+    (!posts.length && 'No posts found.') || (
       <Card.Group itemsPerRow={3}>
         {posts.map(post => (
           <Card centered key={post.id}>

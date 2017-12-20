@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { fetchPost, voteForPost } from '../actions';
+import { deletePost, fetchPost, voteForPost } from '../actions';
 import {
   Button,
   Container,
@@ -33,13 +33,13 @@ class Post extends Component {
     this.props.fetchPost(postId);
   }
 
-  //<Button.Group icon>
+  deletePost = () => {
+    const { deletePost, post, history } = this.props;
+    deletePost(post.id).then(() => history.push('/'));
+  };
+
   render() {
     const { post } = this.props;
-
-    console.info('>>> post:', post);
-    debugger;
-
     return (
       <Container>
         <Divider />
@@ -81,7 +81,11 @@ class Post extends Component {
                 className="edit-delete-thumbs"
               >
                 <Button icon="edit" content="Edit" />
-                <Button icon="trash outline" content="Delete" />
+                <Button
+                  icon="trash outline"
+                  content="Delete"
+                  onClick={this.deletePost}
+                />
                 <Button
                   icon="thumbs outline up"
                   content="Upvote"
@@ -105,6 +109,7 @@ class Post extends Component {
 const mapStateToProps = ({ post }) => ({ post });
 
 const mapDispatchToProps = dispatch => ({
+  deletePost: postId => dispatch(deletePost(postId)),
   fetchPost: postId => dispatch(fetchPost(postId)),
   voteForPost: (postId, voteType) => dispatch(voteForPost(postId, voteType)),
 });

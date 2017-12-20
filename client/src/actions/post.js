@@ -1,7 +1,14 @@
 import api from '../utils/api';
 
+export const DELETE_POST = 'DELETE_POST';
 export const FETCH_POST = 'FETCH_POST';
 export const VOTE_FOR_POST = 'VOTE_FOR_POST';
+
+export function deletePost(postId) {
+  const url = `/posts/${postId}`;
+  const payload = api.delete(url).then(response => response.data);
+  return { type: DELETE_POST, payload };
+}
 
 export function fetchPost(postId) {
   const url = `/posts/${postId}`;
