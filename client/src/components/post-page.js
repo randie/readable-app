@@ -65,7 +65,7 @@ class Post extends Component {
                 </span>
                 <span>
                   <Icon name="calendar outline" disabled />
-                  {moment(post.timestamp).format('ll LT')}
+                  {moment(post.timestamp).format('lll')}
                 </span>
                 <span>
                   <Icon name="tag" disabled />

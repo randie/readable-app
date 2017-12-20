@@ -107,7 +107,7 @@ function PostCards({ posts }) {
               </span>
               <span>
                 <Icon name="calendar outline" />
-                {moment(post.timestamp).format('ll LT')}
+                {moment(post.timestamp).format('lll')}
               </span>
             </Card.Content>
             <Card.Content description={post.body.slice(0, 200)} />
