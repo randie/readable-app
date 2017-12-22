@@ -4,14 +4,23 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import Comments from './comments';
-import { deletePost, fetchComments, fetchPost, voteForPost } from '../actions';
+import {
+  deletePostAction,
+  fetchCommentsAction,
+  fetchPostAction,
+  voteForPostAction,
+} from '../actions';
 import {
   Button,
   Container,
   Divider,
+  Form,
   Grid,
   Header,
   Icon,
+  Input,
+  Modal,
+  TextArea,
 } from 'semantic-ui-react';
 
 class Post extends Component {
@@ -21,6 +30,20 @@ class Post extends Component {
     fetchComments: PropTypes.func.isRequired,
     fetchPost: PropTypes.func.isRequired,
     voteForPost: PropTypes.func.isRequired,
+  };
+
+  state = { open: false, author: '', comment: '' };
+
+  openModal = () => this.setState({ open: true });
+  closeModal = () => this.setState({ open: false, author: '', comment: '' });
+
+  handleChange = (event, { name, value }) => this.setState({ [name]: value });
+
+  handleSubmit = event => {
+    event.preventDefault();
+    const { author, comment } = this.state;
+    console.info(author, '=>', comment);
+    this.closeModal();
   };
 
   componentDidMount() {
@@ -34,11 +57,7 @@ class Post extends Component {
   }
 
   fetchDataForPage() {
-    const {
-      fetchPost,
-      fetchComments,
-      match: { params: { postId } },
-    } = this.props;
+    const { fetchPost, fetchComments, match: { params: { postId } } } = this.props;
     fetchPost(postId);
     fetchComments(postId);
   }
@@ -50,68 +69,111 @@ class Post extends Component {
 
   render() {
     const { post } = this.props;
+    const { open, author, comment } = this.state;
 
     return (
       <Container>
         <Divider />
         {!isEmpty(post) && (
-          <Grid>
-            <Grid.Column width={12}>
-              <Header as="h2">{post.title}</Header>
-              <div className="post-meta">
-                <span>
-                  <Icon name="user" disabled />
-                  {post.author}
-                </span>
-                <span>
-                  <Icon name="calendar outline" disabled />
-                  {moment(post.timestamp).format('lll')}
-                </span>
-                <span>
-                  <Icon name="tag" disabled />
-                  {post.category}
-                </span>
-                <span>
-                  <Icon name="thumbs up" disabled />
-                  {post.voteScore}
-                </span>
-                <span>
-                  <Icon disabled name="comment" />
-                  {post.commentCount}
-                </span>
-              </div>
-              <p>{post.body}</p>
-              <Comments />
-            </Grid.Column>
-            <Grid.Column width={4}>
-              <Button.Group
-                basic
-                vertical
-                labeled
-                icon
-                floated="right"
-                className="edit-delete-thumbs"
-              >
-                <Button icon="edit" content="Edit" />
+          <div>
+            <Grid>
+              <Grid.Column width={12}>
+                <Header as="h2">{post.title}</Header>
+                <div className="post-meta">
+                  <span>
+                    <Icon name="user" disabled />
+                    {post.author}
+                  </span>
+                  <span>
+                    <Icon name="calendar outline" disabled />
+                    {moment(post.timestamp).format('lll')}
+                  </span>
+                  <span>
+                    <Icon name="tag" disabled />
+                    {post.category}
+                  </span>
+                  <span>
+                    <Icon name="thumbs up" disabled />
+                    {post.voteScore}
+                  </span>
+                  <span>
+                    <Icon disabled name="comment" />
+                    {post.commentCount}
+                  </span>
+                </div>
+                <p>{post.body}</p>
+                <Comments />
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Button.Group
+                  basic
+                  vertical
+                  labeled
+                  icon
+                  floated="right"
+                  className="edit-delete-thumbs"
+                >
+                  <Button icon="edit" content="Edit" />
+                  <Button icon="trash outline" content="Delete" onClick={this.deletePost} />
+                  <Button
+                    icon="thumbs outline up"
+                    content="Upvote"
+                    onClick={() => this.props.voteForPost(post.id, 'upVote')}
+                  />
+                  <Button
+                    icon="thumbs outline down"
+                    content="Downvote"
+                    onClick={() => this.props.voteForPost(post.id, 'downVote')}
+                  />
+                  <Button icon="commenting outline" content="Comment" onClick={this.openModal} />
+                </Button.Group>
+              </Grid.Column>
+            </Grid>
+            <Modal size="small" dimmer={true} open={open} onClose={this.closeModal}>
+              <Modal.Header>Add Comment</Modal.Header>
+              <Modal.Content>
+                <Form id="comment-form" onSubmit={this.handleSubmit}>
+                  <Form.Field>
+                    <label>Name</label>
+                    <Input
+                      name="author"
+                      value={author}
+                      placeholder="Enter your name here"
+                      onChange={this.handleChange}
+                      autoFocus
+                    />
+                  </Form.Field>
+                  <Form.Field required>
+                    <label>Comment</label>
+                    <TextArea
+                      name="comment"
+                      value={comment}
+                      placeholder="Write your comment here"
+                      onChange={this.handleChange}
+                    />
+                  </Form.Field>
+                </Form>
+              </Modal.Content>
+              <Modal.Actions>
                 <Button
-                  icon="trash outline"
-                  content="Delete"
-                  onClick={this.deletePost}
+                  form="comment-form"
+                  color="grey"
+                  icon="cancel"
+                  labelPosition="right"
+                  content="Cancel"
+                  onClick={this.closeModal}
                 />
                 <Button
-                  icon="thumbs outline up"
-                  content="Upvote"
-                  onClick={() => this.props.voteForPost(post.id, 'upVote')}
+                  form="comment-form"
+                  type="submit"
+                  primary
+                  icon="checkmark"
+                  labelPosition="right"
+                  content="Submit"
                 />
-                <Button
-                  icon="thumbs outline down"
-                  content="Downvote"
-                  onClick={() => this.props.voteForPost(post.id, 'downVote')}
-                />
-                <Button icon="commenting outline" content="Comment" />
-              </Button.Group>
-            </Grid.Column>
-          </Grid>
+              </Modal.Actions>
+            </Modal>
+          </div>
         )}
       </Container>
     );
@@ -121,10 +183,10 @@ class Post extends Component {
 const mapStateToProps = ({ post }) => ({ post });
 
 const mapDispatchToProps = dispatch => ({
-  deletePost: postId => dispatch(deletePost(postId)),
-  fetchComments: postId => dispatch(fetchComments(postId)),
-  fetchPost: postId => dispatch(fetchPost(postId)),
-  voteForPost: (postId, voteType) => dispatch(voteForPost(postId, voteType)),
+  deletePost: postId => dispatch(deletePostAction(postId)),
+  fetchComments: postId => dispatch(fetchCommentsAction(postId)),
+  fetchPost: postId => dispatch(fetchPostAction(postId)),
+  voteForPost: (postId, voteType) => dispatch(voteForPostAction(postId, voteType)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Post);

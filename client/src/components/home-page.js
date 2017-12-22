@@ -4,7 +4,11 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import { fetchCategories, fetchPosts, sortPosts } from '../actions';
+import {
+  fetchCategoriesAction,
+  fetchPostsAction,
+  sortPostsAction,
+} from '../actions';
 import {
   Button,
   Card,
@@ -175,9 +179,9 @@ class HomePage extends Component {
 const mapStateToProps = ({ categories, posts }) => ({ categories, posts });
 
 const mapDispatchToProps = dispatch => ({
-  fetchCategories: () => dispatch(fetchCategories()),
-  fetchPosts: category => dispatch(fetchPosts(category)),
-  sortPosts: sortBy => dispatch(sortPosts(sortBy)),
+  fetchCategories: () => dispatch(fetchCategoriesAction()),
+  fetchPosts: category => dispatch(fetchPostsAction(category)),
+  sortPosts: sortBy => dispatch(sortPostsAction(sortBy)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

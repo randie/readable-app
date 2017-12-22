@@ -44,3 +44,17 @@ body {
 .ui.comments .comment .actions {
   margin-top: 1rem;
 }
+
+.ui.dimmer {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.ui.form .field.actions {
+  text-align: right;
+  margin-top: 2rem;
+}
+
+.ui.modal > .actions {
+  background: white;
+  border-top: none;
+}

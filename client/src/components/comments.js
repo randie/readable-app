@@ -32,8 +32,8 @@ class Comments extends Component {
                   <Button.Group basic size="tiny">
                     <Button icon="edit" />
                     <Button icon="trash outline" />
-                    <Button icon="thumbs outline down" />
                     <Button icon="thumbs outline up" />
+                    <Button icon="thumbs outline down" />
                   </Button.Group>
                 </Comment.Action>
               </Comment.Actions>
