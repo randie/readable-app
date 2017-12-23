@@ -49,12 +49,13 @@ body {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-.ui.form .field.actions {
-  text-align: right;
-  margin-top: 2rem;
-}
-
-.ui.modal > .actions {
+.ui.modal .actions {
   background: white;
   border-top: none;
+  margin: 2rem 0 0;
+  text-align: right;
+}
+
+.ui.form button:last-of-type {
+  margin-right: 0;
 }

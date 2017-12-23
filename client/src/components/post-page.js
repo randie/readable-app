@@ -4,12 +4,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import Comments from './comments';
-import {
-  deletePostAction,
-  fetchCommentsAction,
-  fetchPostAction,
-  voteForPostAction,
-} from '../actions';
+
 import {
   Button,
   Container,
@@ -23,6 +18,79 @@ import {
   TextArea,
 } from 'semantic-ui-react';
 
+import {
+  deletePostAction,
+  fetchCommentsAction,
+  fetchPostAction,
+  voteForPostAction,
+} from '../actions';
+
+class CommentFormModal extends Component {
+  state = { comment: '', author: '' };
+
+  handleChange = (event, { name, value }) => this.setState({ [name]: value });
+
+  handleSubmit = event => {
+    event.preventDefault();
+
+    const { author, comment } = this.state;
+    console.info(author, '=>', comment);
+
+    this.setState({ comment: '', author: '' });
+    this.props.closeModal();
+  };
+
+  render() {
+    const { comment, author } = this.state;
+    const { open, closeModal } = this.props;
+
+    return (
+      <Modal size="small" dimmer={true} open={open} onClose={closeModal}>
+        <Modal.Header>Add Comment</Modal.Header>
+        <Modal.Content>
+          <Form onSubmit={this.handleSubmit}>
+            <Form.Field>
+              <label>Comment</label>
+              <TextArea
+                name="comment"
+                value={comment}
+                placeholder="Write your comment here"
+                onChange={this.handleChange}
+                autoFocus
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>Name</label>
+              <Input
+                name="author"
+                value={author}
+                placeholder="Write your name here"
+                onChange={this.handleChange}
+              />
+            </Form.Field>
+            <div className="actions">
+              <Button
+                color="grey"
+                icon="cancel"
+                labelPosition="right"
+                content="Cancel"
+                onClick={closeModal}
+              />
+              <Button
+                type="submit"
+                primary
+                icon="checkmark"
+                labelPosition="right"
+                content="Submit"
+              />
+            </div>
+          </Form>
+        </Modal.Content>
+      </Modal>
+    );
+  }
+}
+
 class Post extends Component {
   static propTypes = {
     post: PropTypes.object,
@@ -32,19 +100,10 @@ class Post extends Component {
     voteForPost: PropTypes.func.isRequired,
   };
 
-  state = { open: false, author: '', comment: '' };
+  state = { open: false };
 
   openModal = () => this.setState({ open: true });
-  closeModal = () => this.setState({ open: false, author: '', comment: '' });
-
-  handleChange = (event, { name, value }) => this.setState({ [name]: value });
-
-  handleSubmit = event => {
-    event.preventDefault();
-    const { author, comment } = this.state;
-    console.info(author, '=>', comment);
-    this.closeModal();
-  };
+  closeModal = () => this.setState({ open: false });
 
   componentDidMount() {
     this.fetchDataForPage();
@@ -69,7 +128,7 @@ class Post extends Component {
 
   render() {
     const { post } = this.props;
-    const { open, author, comment } = this.state;
+    const { open } = this.state;
 
     return (
       <Container>
@@ -129,50 +188,7 @@ class Post extends Component {
                 </Button.Group>
               </Grid.Column>
             </Grid>
-            <Modal size="small" dimmer={true} open={open} onClose={this.closeModal}>
-              <Modal.Header>Add Comment</Modal.Header>
-              <Modal.Content>
-                <Form id="comment-form" onSubmit={this.handleSubmit}>
-                  <Form.Field>
-                    <label>Name</label>
-                    <Input
-                      name="author"
-                      value={author}
-                      placeholder="Enter your name here"
-                      onChange={this.handleChange}
-                      autoFocus
-                    />
-                  </Form.Field>
-                  <Form.Field required>
-                    <label>Comment</label>
-                    <TextArea
-                      name="comment"
-                      value={comment}
-                      placeholder="Write your comment here"
-                      onChange={this.handleChange}
-                    />
-                  </Form.Field>
-                </Form>
-              </Modal.Content>
-              <Modal.Actions>
-                <Button
-                  form="comment-form"
-                  color="grey"
-                  icon="cancel"
-                  labelPosition="right"
-                  content="Cancel"
-                  onClick={this.closeModal}
-                />
-                <Button
-                  form="comment-form"
-                  type="submit"
-                  primary
-                  icon="checkmark"
-                  labelPosition="right"
-                  content="Submit"
-                />
-              </Modal.Actions>
-            </Modal>
+            <CommentFormModal open={open} closeModal={this.closeModal} />
           </div>
         )}
       </Container>
