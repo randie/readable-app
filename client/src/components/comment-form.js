@@ -42,7 +42,13 @@ class CommentFormBase extends Component {
     const labels = this.getFormLabels(errors, touched, 'comment', 'author');
 
     return (
-      <Modal dimmer={true} open={open} onClose={this.closeMe} size="small">
+      <Modal
+        open={open}
+        dimmer={true}
+        closeOnDimmerClick={false}
+        onClose={this.closeMe}
+        size="small"
+      >
         <Modal.Header>Add Comment</Modal.Header>
         <Modal.Content>
           <Form onSubmit={handleSubmit} loading={isSubmitting}>
@@ -107,8 +113,9 @@ const CommentForm = withFormik({
       author: values.author,
     };
     props.createComment(commentData).then(result => {
-      setSubmitting(false);
+      props.updateCommentCount();
       props.closeModal();
+      setSubmitting(false);
       setTouched({ author: false, comment: false });
       setErrors({ author: null, comment: null });
       resetForm();

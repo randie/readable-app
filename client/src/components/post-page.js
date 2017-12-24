@@ -14,7 +14,7 @@ import {
   voteForPostAction,
 } from '../actions';
 
-class Post extends Component {
+class PostPage extends Component {
   static propTypes = {
     post: PropTypes.object,
     deletePost: PropTypes.func.isRequired,
@@ -43,6 +43,14 @@ class Post extends Component {
     fetchPost(postId);
     fetchComments(postId);
   }
+
+  updateCommentCount = () => {
+    // NB: This is a way to make the post fetch its data again,
+    // specifically for the purpose of getting its new commentCount
+    // when a comment is added or deleted from the post. [2017-12-24]
+    const { fetchPost, match: { params: { postId } } } = this.props;
+    fetchPost(postId);
+  };
 
   deletePost = () => {
     const { deletePost, post, history } = this.props;
@@ -94,6 +102,7 @@ class Post extends Component {
 
   render() {
     const { post } = this.props;
+    const { state: { open }, closeModal, updateCommentCount } = this;
 
     return (
       <Container>
@@ -109,7 +118,11 @@ class Post extends Component {
               </Grid.Column>
               <Grid.Column width={4}>{this.renderPostControls(post)}</Grid.Column>
             </Grid>
-            <CommentForm open={this.state.open} closeModal={this.closeModal} />
+            <CommentForm
+              open={open}
+              closeModal={closeModal}
+              updateCommentCount={updateCommentCount}
+            />
           </div>
         )}
       </Container>
@@ -126,4 +139,4 @@ const mapDispatchToProps = dispatch => ({
   voteForPost: (postId, voteType) => dispatch(voteForPostAction(postId, voteType)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Post);
+export default connect(mapStateToProps, mapDispatchToProps)(PostPage);
