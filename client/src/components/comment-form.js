@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { capitalize } from 'lodash';
 import { withFormik } from 'formik';
 import Yup from 'yup';
 import { Button, Form, Input, Modal, TextArea } from 'semantic-ui-react';
+import { createCommentAction } from '../actions';
 
 class CommentFormBase extends Component {
   closeMe = () => {
@@ -98,7 +100,9 @@ const CommentForm = withFormik({
   }),
 
   handleSubmit: (values, params) => {
+    debugger;
     const { setSubmitting, resetForm, props, setTouched, setErrors } = params;
+    /*
     setTimeout(() => {
       alert(JSON.stringify(values, null, 2));
       setSubmitting(false);
@@ -107,7 +111,32 @@ const CommentForm = withFormik({
       setErrors({ author: null, comment: null });
       resetForm();
     }, 1000);
+    */
+    const commentData = {
+      parentId: props.post.id,
+      body: values.comment,
+      author: values.author,
+    };
+
+    props.createComment(commentData).then(result => {
+      console.info('create comment result:', result);
+      debugger;
+      setSubmitting(false);
+      props.closeModal();
+      setTouched({ author: false, comment: false });
+      setErrors({ author: null, comment: null });
+      resetForm();
+    });
   },
 })(CommentFormBase);
 
-export default CommentForm;
+//export default CommentForm;
+
+const mapStateToProps = ({ post }) => ({ post });
+
+const mapDispatchToProps = dispatch => ({
+  createComment: ({ parentId, body, author }) =>
+    dispatch(createCommentAction({ parentId, body, author })),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CommentForm);
