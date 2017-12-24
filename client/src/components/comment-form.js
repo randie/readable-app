@@ -100,27 +100,13 @@ const CommentForm = withFormik({
   }),
 
   handleSubmit: (values, params) => {
-    debugger;
     const { setSubmitting, resetForm, props, setTouched, setErrors } = params;
-    /*
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-      props.closeModal();
-      setTouched({ author: false, comment: false });
-      setErrors({ author: null, comment: null });
-      resetForm();
-    }, 1000);
-    */
     const commentData = {
       parentId: props.post.id,
       body: values.comment,
       author: values.author,
     };
-
     props.createComment(commentData).then(result => {
-      console.info('create comment result:', result);
-      debugger;
       setSubmitting(false);
       props.closeModal();
       setTouched({ author: false, comment: false });
@@ -129,8 +115,6 @@ const CommentForm = withFormik({
     });
   },
 })(CommentFormBase);
-
-//export default CommentForm;
 
 const mapStateToProps = ({ post }) => ({ post });
 

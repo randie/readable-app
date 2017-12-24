@@ -9,9 +9,7 @@ const FETCH_COMMENTS_FULFILLED = `${FETCH_COMMENTS}_FULFILLED`;
 function comments(state = [], action) {
   switch (action.type) {
     case CREATE_COMMENT_FULFILLED:
-      debugger;
-      const r = [...state, action.payload];
-      return r;
+      return [...state, action.payload];
     case FETCH_COMMENTS_FULFILLED:
       return action.payload;
     default:
