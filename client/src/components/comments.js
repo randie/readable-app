@@ -6,6 +6,10 @@ import { isEmpty } from 'lodash';
 import { Button, Comment, Divider, Icon } from 'semantic-ui-react';
 
 class Comments extends Component {
+  static propTypes = {
+    comments: PropTypes.array,
+  };
+
   render() {
     const { comments } = this.props;
 
