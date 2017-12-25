@@ -31,7 +31,7 @@ class Comments extends Component {
               <Comment.Content>
                 <Comment.Author as="a">{comment.author}</Comment.Author>
                 <Comment.Metadata>
-                  <span>{moment(comment.timestamp).format('ll')}</span>
+                  <span>{moment(comment.timestamp).format('lll')}</span>
                   <span>
                     <Icon name="thumbs outline up" /> {comment.voteScore}
                   </span>

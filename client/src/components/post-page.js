@@ -115,7 +115,7 @@ class PostPage extends Component {
               <Grid.Column width={12}>
                 <Header as="h2">{post.title}</Header>
                 {this.renderPostMeta(post)}
-                <p>{post.body}</p>
+                <p className="post-body">{post.body}</p>
                 <Comments refetchPost={refetchPost} />
               </Grid.Column>
               <Grid.Column width={4}>{this.renderPostControls(post)}</Grid.Column>

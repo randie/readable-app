@@ -15,6 +15,12 @@ body {
 
 /* override semantic-ui styles here for now */
 
+.ui .menu .item,
+.ui .post-body,
+.ui.card .description {
+  font-size: 1rem;
+}
+
 .post-meta span + span,
 .ui.card .content span + span {
   margin-left: 1.5rem;

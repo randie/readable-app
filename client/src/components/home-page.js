@@ -4,19 +4,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import {
-  fetchCategoriesAction,
-  fetchPostsAction,
-  sortPostsAction,
-} from '../actions';
-import {
-  Button,
-  Card,
-  Container,
-  Dropdown,
-  Icon,
-  Menu,
-} from 'semantic-ui-react';
+import { fetchCategoriesAction, fetchPostsAction, sortPostsAction } from '../actions';
+import { Button, Card, Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
 const menuBarStyle = {
   marginBottom: '3rem',
@@ -72,12 +61,8 @@ class MenuBar extends Component {
         <Menu.Menu position="right">
           <Dropdown item text="Sort by">
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => sortPosts('timestamp')}>
-                date
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => sortPosts('voteScore')}>
-                votes
-              </Dropdown.Item>
+              <Dropdown.Item onClick={() => sortPosts('timestamp')}>date</Dropdown.Item>
+              <Dropdown.Item onClick={() => sortPosts('voteScore')}>votes</Dropdown.Item>
               <Dropdown.Item disabled>author</Dropdown.Item>
               <Dropdown.Item disabled>title</Dropdown.Item>
             </Dropdown.Menu>
@@ -130,7 +115,7 @@ function PostCards({ posts }) {
               </span>
               <span>
                 <Link to={`/${post.category}/${post.id}`} style={linkStyle}>
-                  More <Icon name="arrow right" />
+                  Read More <Icon name="arrow right" />
                 </Link>
               </span>
             </Card.Content>
