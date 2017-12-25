@@ -44,10 +44,12 @@ class PostPage extends Component {
     fetchComments(postId);
   }
 
-  updateCommentCount = () => {
-    // NB: This is a way to make the post fetch its data again,
-    // specifically for the purpose of getting its new commentCount
-    // when a comment is added or deleted from the post. [2017-12-24]
+  refetchPost = () => {
+    // NB: The /comments api doesn't seem to automatically update the
+    // post's commentCount when a comment is added or deleted from it.
+    // In order to see the new commentCount on this page, the post has
+    // to refresh itself. This is a way to manually make the post fetch
+    // its data again. [2017-12-24]
     const { fetchPost, match: { params: { postId } } } = this.props;
     fetchPost(postId);
   };
@@ -102,7 +104,7 @@ class PostPage extends Component {
 
   render() {
     const { post } = this.props;
-    const { state: { open }, closeModal, updateCommentCount } = this;
+    const { state: { open }, closeModal, refetchPost } = this;
 
     return (
       <Container>
@@ -114,15 +116,11 @@ class PostPage extends Component {
                 <Header as="h2">{post.title}</Header>
                 {this.renderPostMeta(post)}
                 <p>{post.body}</p>
-                <Comments />
+                <Comments refetchPost={refetchPost} />
               </Grid.Column>
               <Grid.Column width={4}>{this.renderPostControls(post)}</Grid.Column>
             </Grid>
-            <CommentForm
-              open={open}
-              closeModal={closeModal}
-              updateCommentCount={updateCommentCount}
-            />
+            <CommentForm open={open} closeModal={closeModal} refetchPost={refetchPost} />
           </div>
         )}
       </Container>

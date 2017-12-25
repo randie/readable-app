@@ -8,10 +8,9 @@ import { createCommentAction } from '../actions';
 
 class CommentFormBase extends Component {
   closeMe = () => {
-    const { closeModal, handleReset, setErrors } = this.props;
-    setErrors({});
-    handleReset();
+    const { closeModal, handleReset } = this.props;
     closeModal();
+    handleReset();
   };
 
   getFormLabels(errors, touched, ...fields) {
@@ -113,7 +112,7 @@ const CommentForm = withFormik({
       author: values.author,
     };
     props.createComment(commentData).then(result => {
-      props.updateCommentCount();
+      props.refetchPost();
       props.closeModal();
       setSubmitting(false);
       setTouched({ author: false, comment: false });

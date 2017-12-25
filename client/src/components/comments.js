@@ -4,13 +4,20 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { Button, Comment, Divider, Icon } from 'semantic-ui-react';
+import { deleteCommentAction } from '../actions';
 
 class Comments extends Component {
   static propTypes = {
     comments: PropTypes.array,
   };
 
+  deleteComment = commentId => {
+    const { deleteComment, refetchPost } = this.props;
+    deleteComment(commentId).then(() => refetchPost());
+  };
+
   render() {
+    debugger;
     const { comments } = this.props;
 
     return (
@@ -31,16 +38,15 @@ class Comments extends Component {
                 </Comment.Metadata>
                 <Comment.Text>{comment.body}</Comment.Text>
               </Comment.Content>
-              <Comment.Actions>
-                <Comment.Action onClick={() => this.toggleEdit()}>
-                  <Button.Group basic size="tiny">
-                    <Button icon="edit" />
-                    <Button icon="trash outline" />
-                    <Button icon="thumbs outline up" />
-                    <Button icon="thumbs outline down" />
-                  </Button.Group>
-                </Comment.Action>
-              </Comment.Actions>
+              <Button.Group basic size="tiny">
+                <Button icon="edit" onClick={() => window.alert('edit comment')} />
+                <Button icon="trash outline" onClick={() => this.deleteComment(comment.id)} />
+                <Button icon="thumbs outline up" onClick={() => window.alert('upvote comment')} />
+                <Button
+                  icon="thumbs outline down"
+                  onClick={() => window.alert('downvote comment')}
+                />
+              </Button.Group>
               <Divider />
             </Comment>
           ))}
@@ -52,4 +58,8 @@ class Comments extends Component {
 
 const mapStateToProps = ({ comments }) => ({ comments });
 
-export default connect(mapStateToProps)(Comments);
+const mapDispatchToProps = dispatch => ({
+  deleteComment: commentId => dispatch(deleteCommentAction(commentId)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Comments);
