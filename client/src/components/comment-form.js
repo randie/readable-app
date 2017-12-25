@@ -6,7 +6,7 @@ import Yup from 'yup';
 import { Button, Form, Input, Modal, TextArea } from 'semantic-ui-react';
 import { createCommentAction } from '../actions';
 
-class CommentFormBase extends Component {
+class CommentForm extends Component {
   closeMe = () => {
     const { closeModal, handleReset } = this.props;
     closeModal();
@@ -96,7 +96,7 @@ class CommentFormBase extends Component {
   }
 }
 
-const CommentForm = withFormik({
+const CommentFormik = withFormik({
   mapPropsToValues: () => ({ comment: '', author: '' }),
 
   validationSchema: Yup.object().shape({
@@ -120,7 +120,7 @@ const CommentForm = withFormik({
       resetForm();
     });
   },
-})(CommentFormBase);
+})(CommentForm);
 
 const mapStateToProps = ({ post }) => ({ post });
 
@@ -129,4 +129,4 @@ const mapDispatchToProps = dispatch => ({
     dispatch(createCommentAction({ parentId, body, author })),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CommentForm);
+export default connect(mapStateToProps, mapDispatchToProps)(CommentFormik);
