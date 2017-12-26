@@ -43,12 +43,13 @@ class MenuBar extends Component {
     const { activeItem } = this.state;
     const { categories, sortPosts } = this.props;
     return (
-      <Menu size="small" style={menuBarStyle}>
+      <Menu style={menuBarStyle} size="tiny">
         <Menu.Item
           name="all"
           active={!this.props.match.params.category}
           onClick={this.handleMenuItemClick('/')}
         />
+
         {categories.map(category => (
           <Menu.Item
             name={category.name}
@@ -69,7 +70,7 @@ class MenuBar extends Component {
           </Dropdown>
 
           <Menu.Item>
-            <Button primary>New Post</Button>
+            <Button primary content="New Post" onClick={() => window.alert('new post')} />
           </Menu.Item>
         </Menu.Menu>
       </Menu>
@@ -115,7 +116,7 @@ function PostCards({ posts }) {
               </span>
               <span>
                 <Link to={`/${post.category}/${post.id}`} style={linkStyle}>
-                  Read More <Icon name="arrow right" />
+                  Read More <Icon name="angle double right" />
                 </Link>
               </span>
             </Card.Content>

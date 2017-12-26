@@ -17,6 +17,7 @@ body {
 
 .ui .menu .item,
 .ui .post-body,
+.ui .all-posts-link,
 .ui.card .description {
   font-size: 1rem;
 }
@@ -61,10 +62,10 @@ body {
   margin: 2.5rem 0 0;
 }
 
-.ui.form button:last-of-type {
-  margin-right: 0;
-}
-
 .ui.modal .actions > .button {
   margin: 0 1rem 0 0;
+}
+
+.ui.form button:last-of-type {
+  margin-right: 0;
 }

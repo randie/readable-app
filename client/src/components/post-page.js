@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
@@ -86,7 +87,7 @@ class PostPage extends Component {
 
   renderPostControls = post => (
     <Button.Group basic vertical labeled icon floated="right" className="edit-delete-thumbs">
-      <Button icon="edit" content="Edit" />
+      <Button icon="edit" content="Edit" onClick={() => window.alert('edit post')} />
       <Button icon="trash outline" content="Delete" onClick={this.deletePost} />
       <Button
         icon="thumbs outline up"
@@ -113,6 +114,9 @@ class PostPage extends Component {
           <div>
             <Grid>
               <Grid.Column width={12}>
+                <Link to="/" className="all-posts-link">
+                  <Icon name="angle double left" /> All Posts
+                </Link>
                 <Header as="h2">{post.title}</Header>
                 {this.renderPostMeta(post)}
                 <p className="post-body">{post.body}</p>
