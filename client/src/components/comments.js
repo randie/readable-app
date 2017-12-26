@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { Button, Comment, Divider, Icon } from 'semantic-ui-react';
-import { deleteCommentAction } from '../actions';
+import { deleteCommentAction, voteForCommentAction } from '../actions';
 
 class Comments extends Component {
   static propTypes = {
@@ -41,10 +41,13 @@ class Comments extends Component {
               <Button.Group basic size="tiny">
                 <Button icon="edit" onClick={() => window.alert('edit comment')} />
                 <Button icon="trash outline" onClick={() => this.deleteComment(comment.id)} />
-                <Button icon="thumbs outline up" onClick={() => window.alert('upvote comment')} />
+                <Button
+                  icon="thumbs outline up"
+                  onClick={() => this.props.voteForComment(comment.id, 'upVote')}
+                />
                 <Button
                   icon="thumbs outline down"
-                  onClick={() => window.alert('downvote comment')}
+                  onClick={() => this.props.voteForComment(comment.id, 'downVote')}
                 />
               </Button.Group>
               <Divider />
@@ -60,6 +63,7 @@ const mapStateToProps = ({ comments }) => ({ comments });
 
 const mapDispatchToProps = dispatch => ({
   deleteComment: commentId => dispatch(deleteCommentAction(commentId)),
+  voteForComment: (commentId, voteType) => dispatch(voteForCommentAction(commentId, voteType)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Comments);

@@ -4,6 +4,7 @@ import uuidv4 from 'uuid/v4';
 export const CREATE_COMMENT = 'CREATE_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';
 export const FETCH_COMMENTS = 'FETCH_COMMENTS';
+export const VOTE_FOR_COMMENT = 'VOTE_FOR_COMMENT';
 
 export function createCommentAction({ parentId, body, author }) {
   const url = `/comments`;
@@ -28,4 +29,11 @@ export function fetchCommentsAction(postId) {
   const url = `/posts/${postId}/comments`;
   const payload = api.get(url).then(response => response.data);
   return { type: FETCH_COMMENTS, payload };
+}
+
+export function voteForCommentAction(commentId, voteType) {
+  const url = `/comments/${commentId}`;
+  const option = { option: voteType };
+  const payload = api.post(url, option).then(response => response.data);
+  return { type: VOTE_FOR_COMMENT, payload };
 }
