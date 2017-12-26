@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
+import PostForm from './post-form';
 import { fetchCategoriesAction, fetchPostsAction, sortPostsAction } from '../actions';
 import { Button, Card, Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
@@ -17,7 +18,10 @@ const linkStyle = {
 
 // This is a private component used only by the HomePage component
 class MenuBar extends Component {
-  state = { activeItem: 'all' };
+  state = { activeItem: 'all', open: false };
+
+  openModal = () => this.setState({ open: true });
+  closeModal = () => this.setState({ open: false });
 
   handleMenuItemClick = location => (event, { name }) => {
     this.setState({ activeItem: name });
@@ -40,40 +44,49 @@ class MenuBar extends Component {
   }
 
   render() {
-    const { activeItem } = this.state;
-    const { categories, sortPosts } = this.props;
+    const {
+      state: { activeItem, open },
+      props: { categories, sortPosts, match },
+      closeModal,
+      openModal,
+      handleMenuItemClick,
+    } = this;
+
     return (
-      <Menu style={menuBarStyle} size="tiny">
-        <Menu.Item
-          name="all"
-          active={!this.props.match.params.category}
-          onClick={this.handleMenuItemClick('/')}
-        />
-
-        {categories.map(category => (
+      <div>
+        <Menu style={menuBarStyle} size="tiny">
           <Menu.Item
-            name={category.name}
-            active={category.name === activeItem}
-            onClick={this.handleMenuItemClick(`/${category.path}`)}
-            key={category.name}
+            name="all"
+            active={!match.params.category}
+            onClick={handleMenuItemClick('/')}
           />
-        ))}
 
-        <Menu.Menu position="right">
-          <Dropdown item text="Sort by">
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => sortPosts('timestamp')}>date</Dropdown.Item>
-              <Dropdown.Item onClick={() => sortPosts('voteScore')}>votes</Dropdown.Item>
-              <Dropdown.Item disabled>author</Dropdown.Item>
-              <Dropdown.Item disabled>title</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+          {categories.map(category => (
+            <Menu.Item
+              name={category.name}
+              active={category.name === activeItem}
+              onClick={handleMenuItemClick(`/${category.path}`)}
+              key={category.name}
+            />
+          ))}
 
-          <Menu.Item>
-            <Button primary content="New Post" onClick={() => window.alert('new post')} />
-          </Menu.Item>
-        </Menu.Menu>
-      </Menu>
+          <Menu.Menu position="right">
+            <Dropdown item text="Sort by">
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => sortPosts('timestamp')}>date</Dropdown.Item>
+                <Dropdown.Item onClick={() => sortPosts('voteScore')}>votes</Dropdown.Item>
+                <Dropdown.Item disabled>author</Dropdown.Item>
+                <Dropdown.Item disabled>title</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+
+            <Menu.Item>
+              <Button primary content="New Post" onClick={openModal} />
+            </Menu.Item>
+          </Menu.Menu>
+        </Menu>
+        <PostForm open={open} closeModal={closeModal} />
+      </div>
     );
   }
 }

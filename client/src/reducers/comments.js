@@ -12,16 +12,20 @@ const VOTE_FOR_COMMENT_FULFILLED = `${VOTE_FOR_COMMENT}_FULFILLED`;
 function comments(state = [], action) {
   switch (action.type) {
     case CREATE_COMMENT_FULFILLED:
-      return orderBy([...state, action.payload], ['timestamp'], ['desc']);
+      return orderBy([action.payload, ...state], ['timestamp'], ['desc']);
+
     case DELETE_COMMENT_FULFILLED:
       return state.filter(comment => comment.id !== action.payload.id);
+
     case FETCH_COMMENTS_FULFILLED:
       return orderBy(action.payload, ['timestamp'], ['desc']);
+
     case VOTE_FOR_COMMENT_FULFILLED:
       const newState = [...state];
       const index = findIndex(newState, item => item.id === action.payload.id);
       newState[index] = action.payload;
       return newState;
+
     default:
       return state;
   }
