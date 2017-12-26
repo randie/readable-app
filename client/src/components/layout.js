@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Container, Image } from 'semantic-ui-react';
 
 const logoStyle = {
@@ -19,9 +20,11 @@ const imageStyle = {
 export default props => (
   <div>
     <Container style={logoStyle}>
-      <Image size="mini" src="/readable-logo.svg" style={imageStyle} />
-      <span>readable</span>
+      <Link to="/">
+        <Image size="mini" src="/readable-logo.svg" style={imageStyle} />
+        <span>readable</span>
+      </Link>
     </Container>
-    <Container>{props.children}</Container>
+    {props.children}
   </div>
 );

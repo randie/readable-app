@@ -1,48 +1,60 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import moment from 'moment';
-import { fetchCategories, fetchPosts, sortPosts } from '../actions';
-import { Button, Card, Dropdown, Icon, Menu } from 'semantic-ui-react';
+import { isEmpty } from 'lodash';
+import { fetchCategoriesAction, fetchPostsAction, sortPostsAction } from '../actions';
+import { Button, Card, Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
 const menuBarStyle = {
   marginBottom: '3rem',
 };
-class HomePage extends Component {
+
+const linkStyle = {
+  float: 'right',
+};
+
+// This is a private component used only by the HomePage component
+class MenuBar extends Component {
   state = { activeItem: 'all' };
 
-  handleItemClick = location => (event, { name }) => {
+  handleMenuItemClick = location => (event, { name }) => {
     this.setState({ activeItem: name });
 
     // NB: Making a Menu.Item Link to the new location works
     // but the UI "blinks" when location changes, so I'm doing
-    // this instead until I can figure out why Link-ing makes
-    // the page "blink". See menu-item-with-link-to branch.
+    // this instead. See menu-item-with-link-to branch.
     this.props.history.push(location);
   };
 
-  fetchDataForPage = () => {
-    // TODO: Should these 3 action creators be combined into 1?
+  componentDidMount() {
     this.props.fetchCategories();
-    this.props.fetchPosts(this.props.match.params.category);
-    this.props.sortPosts('voteScore');
-  };
+    this.setState({ activeItem: this.props.match.params.category });
+  }
 
-  menuBar = () => {
+  componentDidUpdate(prevProps) {
+    if (this.props.match.url !== prevProps.match.url) {
+      this.setState({ activeItem: this.props.match.params.category });
+    }
+  }
+
+  render() {
     const { activeItem } = this.state;
     const { categories, sortPosts } = this.props;
-
     return (
-      <Menu size="tiny" style={menuBarStyle}>
+      <Menu style={menuBarStyle} size="tiny">
         <Menu.Item
           name="all"
-          active={activeItem === 'all'}
-          onClick={this.handleItemClick('/')}
+          active={!this.props.match.params.category}
+          onClick={this.handleMenuItemClick('/')}
         />
+
         {categories.map(category => (
           <Menu.Item
             name={category.name}
             active={category.name === activeItem}
-            onClick={this.handleItemClick(`/${category.path}`)}
+            onClick={this.handleMenuItemClick(`/${category.path}`)}
             key={category.name}
           />
         ))}
@@ -50,71 +62,83 @@ class HomePage extends Component {
         <Menu.Menu position="right">
           <Dropdown item text="Sort by">
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => sortPosts('timestamp')}>
-                date
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => sortPosts('voteScore')}>
-                votes
-              </Dropdown.Item>
+              <Dropdown.Item onClick={() => sortPosts('timestamp')}>date</Dropdown.Item>
+              <Dropdown.Item onClick={() => sortPosts('voteScore')}>votes</Dropdown.Item>
               <Dropdown.Item disabled>author</Dropdown.Item>
               <Dropdown.Item disabled>title</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
 
           <Menu.Item>
-            <Button primary>New Post</Button>
+            <Button primary content="New Post" onClick={() => window.alert('new post')} />
           </Menu.Item>
         </Menu.Menu>
       </Menu>
     );
+  }
+}
+
+// This is a private component used only by the HomePage component
+function PostCards({ posts }) {
+  return (
+    (isEmpty(posts) && 'No posts found.') || (
+      <Card.Group itemsPerRow={3}>
+        {posts.map(post => (
+          <Card centered key={post.id}>
+            <Card.Content>
+              <Card.Header>
+                <Link to={`/${post.category}/${post.id}`}>{post.title}</Link>
+              </Card.Header>
+            </Card.Content>
+            <Card.Content extra>
+              <span>
+                <Icon name="user" />
+                {post.author}
+              </span>
+              <span>
+                <Icon name="calendar outline" />
+                {moment(post.timestamp).format('lll')}
+              </span>
+            </Card.Content>
+            <Card.Content description={post.body.slice(0, 200)} />
+            <Card.Content>
+              <span>
+                <Icon disabled name="tag" />
+                {post.category}
+              </span>
+              <span>
+                <Icon disabled name="thumbs up" />
+                {post.voteScore}
+              </span>
+              <span>
+                <Icon disabled name="comment" />
+                {post.commentCount}
+              </span>
+              <span>
+                <Link to={`/${post.category}/${post.id}`} style={linkStyle}>
+                  Read More <Icon name="angle double right" />
+                </Link>
+              </span>
+            </Card.Content>
+          </Card>
+        ))}
+      </Card.Group>
+    )
+  );
+}
+
+class HomePage extends Component {
+  static propTypes = {
+    categories: PropTypes.array,
+    posts: PropTypes.array,
+    fetchCategories: PropTypes.func.isRequired,
+    fetchPosts: PropTypes.func.isRequired,
+    sortPosts: PropTypes.func.isRequired,
   };
 
-  postCards = () => {
-    const { posts } = this.props;
-    return (
-      posts &&
-      posts.length && (
-        <Card.Group itemsPerRow={3}>
-          {posts.map(post => (
-            <Card centered key={post.id}>
-              <Card.Content>
-                <Card.Header>{post.title}</Card.Header>
-                <Card.Meta>{moment(post.timestamp).format('ll LT')}</Card.Meta>
-              </Card.Content>
-              <Card.Content description={post.body} />
-              <Card.Content>
-                <span>
-                  <Icon disabled name="user" />
-                  {post.author}
-                </span>
-                <span>
-                  <Icon disabled name="tag" />
-                  {post.category}
-                </span>
-                <span>
-                  <Icon disabled name="thumbs up" />
-                  {post.voteScore}
-                </span>
-              </Card.Content>
-            </Card>
-          ))}
-        </Card.Group>
-      )
-    );
-  };
-
-  componentWillMount() {
-    this.setState({ activeItem: this.props.match.params.category || 'all' });
+  componentDidMount() {
     this.fetchDataForPage();
   }
-
-  /*
-  componentDidMount() {
-    this.props.fetchCategories();
-    this.props.fetchPosts(this.props.match.params.category);
-    this.props.sortPosts('voteScore');
-  }
-  */
 
   componentDidUpdate(prevProps) {
     if (this.props.match.url !== prevProps.match.url) {
@@ -122,12 +146,18 @@ class HomePage extends Component {
     }
   }
 
+  fetchDataForPage() {
+    // TODO: Should these 2 action creators be combined into 1?
+    this.props.fetchPosts(this.props.match.params.category);
+    this.props.sortPosts('voteScore');
+  }
+
   render() {
     return (
-      <div>
-        {this.menuBar()}
-        {this.postCards()}
-      </div>
+      <Container>
+        <MenuBar {...this.props} />
+        <PostCards posts={this.props.posts} />
+      </Container>
     );
   }
 }
@@ -135,9 +165,9 @@ class HomePage extends Component {
 const mapStateToProps = ({ categories, posts }) => ({ categories, posts });
 
 const mapDispatchToProps = dispatch => ({
-  fetchCategories: () => dispatch(fetchCategories()),
-  fetchPosts: category => dispatch(fetchPosts(category)),
-  sortPosts: sortBy => dispatch(sortPosts(sortBy)),
+  fetchCategories: () => dispatch(fetchCategoriesAction()),
+  fetchPosts: category => dispatch(fetchPostsAction(category)),
+  sortPosts: sortBy => dispatch(sortPostsAction(sortBy)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

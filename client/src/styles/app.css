@@ -15,18 +15,57 @@ body {
 
 /* override semantic-ui styles here for now */
 
-.ui.cards > .card > .content > .header {
-  color: #6688dd;
+.ui .menu .item,
+.ui .post-body,
+.ui .all-posts-link,
+.ui.card .description {
+  font-size: 1rem;
 }
 
-.ui .button-new-post {
-  float: right;
+.post-meta span + span,
+.ui.card .content span + span {
+  margin-left: 1.5rem;
 }
 
-.ui .sort-by {
-  margin-right: 0.5rem;
+.post-meta {
+  margin: -0.6rem 0 1.4rem;
 }
 
-.ui .card .content span {
-  margin-right: 1rem;
+.ui .divider {
+  margin-bottom: 2rem;
+}
+
+.ui .edit-delete-thumbs {
+  margin-bottom: 2rem;
+  width: 80%;
+}
+
+.ui .edit-delete-thumbs button {
+  text-align: left;
+}
+
+.ui.comments .comment .metadata span {
+  margin-left: 1rem;
+}
+
+.ui.comments .comment .actions {
+  margin-top: 1rem;
+}
+
+.ui.dimmer {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.ui.modal .actions {
+  background: white;
+  border-top: none;
+  margin: 2.5rem 0 0;
+}
+
+.ui.modal .actions > .button {
+  margin: 0 1rem 0 0;
+}
+
+.ui.form button:last-of-type {
+  margin-right: 0;
 }

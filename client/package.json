@@ -4,8 +4,10 @@
   "private": true,
   "dependencies": {
     "axios": "^0.17.1",
+    "formik": "^0.10.5",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
+    "prop-types": "^15.6.0",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
     "react-redux": "^5.0.6",
@@ -15,7 +17,9 @@
     "redux-promise-middleware": "^5.0.0",
     "redux-thunk": "^2.2.0",
     "semantic-ui-css": "^2.2.12",
-    "semantic-ui-react": "^0.76.0"
+    "semantic-ui-react": "^0.76.0",
+    "uuid": "^3.1.0",
+    "yup": "^0.23.0"
   },
   "scripts": {
     "start": "react-scripts start",

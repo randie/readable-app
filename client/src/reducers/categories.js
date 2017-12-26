@@ -1,6 +1,6 @@
 import { FETCH_CATEGORIES } from '../actions';
 
-// redux-promise-middleware returns a new action with "_FULFillED"
+// redux-promise-middleware returns a new action with "_FULFILLED"
 // tacked on to the original action type when the promise for a
 // payload is fulfilled.
 const FETCH_CATEGORIES_FULFILLED = `${FETCH_CATEGORIES}_FULFILLED`;
