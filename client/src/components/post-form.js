@@ -1,35 +1,44 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Button, Form, Modal } from 'semantic-ui-react';
+import { capitalize } from 'lodash';
+import { withFormik } from 'formik';
+import Yup from 'yup';
+import { Button, Form, Input, Modal, TextArea } from 'semantic-ui-react';
 import { createPostAction } from '../actions';
 
 class PostForm extends Component {
   closeMe = () => {
     const { closeModal, handleReset } = this.props;
     closeModal();
-    //handleReset();  // TODO
+    handleReset();
   };
 
-  // TODO: move to withFormik, replace hardcoded values
-  handleSubmit = () => {
-    const { closeModal, createPost, resetActiveCategory, refetchPosts } = this.props;
-    const post = {
-      title: 'Error Handling in React 16',
-      body:
-        'In the past, JavaScript errors inside components used to corrupt React’s internal state and cause it to emit cryptic errors on next renders. These errors were always caused by an earlier error in the application code, but React did not provide a way to handle them gracefully in components, and could not recover from them.',
-      author: 'Dan Abramov',
-      category: 'react',
-    };
-    createPost(post).then(result => {
-      resetActiveCategory();
-      refetchPosts();
-      closeModal();
+  getFormLabels(errors, touched, ...fields) {
+    const labels = {};
+    fields.forEach(field => {
+      labels[field] =
+        !errors[field] || !touched[field] ? (
+          capitalize(field)
+        ) : (
+          <span style={{ color: 'red' }}>{errors[field]}</span>
+        );
     });
-  };
+    return labels;
+  }
 
   render() {
-    const { open } = this.props;
-    const isSubmitting = false; // TODO
+    const {
+      open,
+      values,
+      touched,
+      errors,
+      isSubmitting,
+      handleChange,
+      handleBlur,
+      handleSubmit,
+    } = this.props;
+
+    const labels = this.getFormLabels(errors, touched, 'title', 'body', 'author');
 
     return (
       <Modal
@@ -41,7 +50,40 @@ class PostForm extends Component {
       >
         <Modal.Header>Add Post</Modal.Header>
         <Modal.Content>
-          <Form onSubmit={this.handleSubmit}>
+          <Form onSubmit={handleSubmit}>
+            <Form.Field>
+              <label>{labels.title}</label>
+              <Input
+                type="text"
+                name="title"
+                value={values['title']}
+                placeholder="Write your title here"
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>{labels.body}</label>
+              <TextArea
+                name="body"
+                value={values['body']}
+                placeholder="Write your content here"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                autoHeight
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>{labels.author}</label>
+              <Input
+                type="text"
+                name="author"
+                value={values['author']}
+                placeholder="Write your name here"
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </Form.Field>
             <div className="actions">
               <Button
                 primary
@@ -65,12 +107,37 @@ class PostForm extends Component {
   }
 }
 
-//export default PostForm;
+const PostFormik = withFormik({
+  mapPropsToValues: () => ({ title: '', body: '', author: '' }),
 
-//const mapStateToProps = ({ post }) => ({ post });
+  validationSchema: Yup.object().shape({
+    title: Yup.string().required('Title is required'),
+    body: Yup.string().required('Body is required'),
+    author: Yup.string().required('Author is required'),
+  }),
+
+  handleSubmit: (values, params) => {
+    const { setSubmitting, resetForm, props, setTouched, setErrors } = params;
+    const postData = {
+      title: values.title,
+      body: values.body,
+      author: values.author,
+      category: 'react', // TODO
+    };
+    props.createPost(postData).then(result => {
+      props.resetActiveCategory();
+      props.refetchPosts();
+      props.closeModal();
+      setSubmitting(false);
+      setTouched({ title: false, body: false, author: false });
+      setErrors({ title: null, body: null, author: null });
+      resetForm();
+    });
+  },
+})(PostForm);
 
 const mapDispatchToProps = dispatch => ({
   createPost: post => dispatch(createPostAction(post)),
 });
 
-export default connect(null, mapDispatchToProps)(PostForm);
+export default connect(null, mapDispatchToProps)(PostFormik);
