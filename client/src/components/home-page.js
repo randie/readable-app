@@ -23,6 +23,8 @@ class MenuBar extends Component {
   openModal = () => this.setState({ open: true });
   closeModal = () => this.setState({ open: false });
 
+  resetActiveCategory = () => this.setState({ activeItem: 'all' });
+
   handleMenuItemClick = location => (event, { name }) => {
     this.setState({ activeItem: name });
 
@@ -34,33 +36,28 @@ class MenuBar extends Component {
 
   componentDidMount() {
     this.props.fetchCategories();
-    this.setState({ activeItem: this.props.match.params.category });
+    this.setState({ activeItem: this.props.match.params.category || 'all' });
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.match.url !== prevProps.match.url) {
-      this.setState({ activeItem: this.props.match.params.category });
+      this.setState({ activeItem: this.props.match.params.category || 'all' });
     }
   }
 
   render() {
     const {
       state: { activeItem, open },
-      props: { categories, sortPosts, match },
+      props: { categories, sortPosts, match, fetchPosts },
       closeModal,
       openModal,
       handleMenuItemClick,
+      resetActiveCategory,
     } = this;
 
     return (
       <div>
         <Menu style={menuBarStyle} size="tiny">
-          <Menu.Item
-            name="all"
-            active={!match.params.category}
-            onClick={handleMenuItemClick('/')}
-          />
-
           {categories.map(category => (
             <Menu.Item
               name={category.name}
@@ -85,7 +82,13 @@ class MenuBar extends Component {
             </Menu.Item>
           </Menu.Menu>
         </Menu>
-        <PostForm open={open} closeModal={closeModal} />
+
+        <PostForm
+          open={open}
+          closeModal={closeModal}
+          resetActiveCategory={resetActiveCategory}
+          refetchPosts={fetchPosts}
+        />
       </div>
     );
   }
@@ -150,19 +153,15 @@ class HomePage extends Component {
   };
 
   componentDidMount() {
-    this.fetchDataForPage();
+    const { fetchPosts, match } = this.props;
+    fetchPosts(match.params.category);
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.match.url !== prevProps.match.url) {
-      this.fetchDataForPage();
+    const { fetchPosts, match } = this.props;
+    if (match.url !== prevProps.match.url) {
+      fetchPosts(match.params.category);
     }
-  }
-
-  fetchDataForPage() {
-    // TODO: Should these 2 action creators be combined into 1?
-    this.props.fetchPosts(this.props.match.params.category);
-    this.props.sortPosts('voteScore');
   }
 
   render() {
@@ -175,7 +174,10 @@ class HomePage extends Component {
   }
 }
 
-const mapStateToProps = ({ categories, posts }) => ({ categories, posts });
+const mapStateToProps = ({ categories, posts }) => ({
+  categories: [{ name: 'all', path: '' }, ...categories],
+  posts,
+});
 
 const mapDispatchToProps = dispatch => ({
   fetchCategories: () => dispatch(fetchCategoriesAction()),

@@ -10,18 +10,19 @@ class PostForm extends Component {
     //handleReset();  // TODO
   };
 
-  // TODO: move to withFormik
+  // TODO: move to withFormik, replace hardcoded values
   handleSubmit = () => {
-    const { closeModal, createPost } = this.props;
+    const { closeModal, createPost, resetActiveCategory, refetchPosts } = this.props;
     const post = {
       title: 'Error Handling in React 16',
       body:
         'In the past, JavaScript errors inside components used to corrupt React’s internal state and cause it to emit cryptic errors on next renders. These errors were always caused by an earlier error in the application code, but React did not provide a way to handle them gracefully in components, and could not recover from them.',
       author: 'Dan Abramov',
       category: 'react',
-      votescore: 4,
     };
     createPost(post).then(result => {
+      resetActiveCategory();
+      refetchPosts();
       closeModal();
     });
   };
