@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { capitalize } from 'lodash';
 import { withFormik } from 'formik';
 import Yup from 'yup';
-import { Button, Form, Input, Modal, TextArea } from 'semantic-ui-react';
+import { Button, Dropdown, Form, Input, Modal, TextArea } from 'semantic-ui-react';
 import { createPostAction } from '../actions';
 
 class PostForm extends Component {
@@ -11,6 +11,14 @@ class PostForm extends Component {
     const { closeModal, handleReset } = this.props;
     closeModal();
     handleReset();
+  };
+
+  handleCategoryChange = (event, data) => {
+    this.props.setFieldValue('category', data.value);
+  };
+
+  handleCategoryBlur = () => {
+    this.props.setFieldTouched('category', true);
   };
 
   getFormLabels(errors, touched, ...fields) {
@@ -29,6 +37,7 @@ class PostForm extends Component {
   render() {
     const {
       open,
+      categories,
       values,
       touched,
       errors,
@@ -38,7 +47,11 @@ class PostForm extends Component {
       handleSubmit,
     } = this.props;
 
-    const labels = this.getFormLabels(errors, touched, 'title', 'body', 'author');
+    const labels = this.getFormLabels(errors, touched, 'title', 'body', 'category', 'author');
+
+    const categoryOptions = categories.map(({ name }) => {
+      return { key: name, value: name, text: capitalize(name) };
+    });
 
     return (
       <Modal
@@ -71,6 +84,17 @@ class PostForm extends Component {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 autoHeight
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>{labels.category}</label>
+              <Dropdown
+                placeholder="Select a category"
+                search
+                selection
+                options={categoryOptions}
+                onChange={this.handleCategoryChange}
+                onBlur={this.handleCategoryBlur}
               />
             </Form.Field>
             <Form.Field>
@@ -108,36 +132,35 @@ class PostForm extends Component {
 }
 
 const PostFormik = withFormik({
-  mapPropsToValues: () => ({ title: '', body: '', author: '' }),
+  mapPropsToValues: () => ({ title: '', body: '', category: '', author: '' }),
 
   validationSchema: Yup.object().shape({
     title: Yup.string().required('Title is required'),
     body: Yup.string().required('Body is required'),
+    category: Yup.string().required('Category is required'),
     author: Yup.string().required('Author is required'),
   }),
 
   handleSubmit: (values, params) => {
+    const { title, body, category, author } = values;
     const { setSubmitting, resetForm, props, setTouched, setErrors } = params;
-    const postData = {
-      title: values.title,
-      body: values.body,
-      author: values.author,
-      category: 'react', // TODO
-    };
-    props.createPost(postData).then(result => {
+
+    props.createPost({ title, body, category, author }).then(result => {
       props.resetActiveCategory();
       props.refetchPosts();
       props.closeModal();
       setSubmitting(false);
-      setTouched({ title: false, body: false, author: false });
-      setErrors({ title: null, body: null, author: null });
+      setTouched({ title: false, body: false, category: false, author: false });
+      setErrors({ title: null, body: null, category: null, author: null });
       resetForm();
     });
   },
 })(PostForm);
 
+const mapStateToProps = ({ categories }) => ({ categories });
+
 const mapDispatchToProps = dispatch => ({
   createPost: post => dispatch(createPostAction(post)),
 });
 
-export default connect(null, mapDispatchToProps)(PostFormik);
+export default connect(mapStateToProps, mapDispatchToProps)(PostFormik);

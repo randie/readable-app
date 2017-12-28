@@ -48,7 +48,7 @@ class MenuBar extends Component {
   render() {
     const {
       state: { activeItem, open },
-      props: { categories, sortPosts, match, fetchPosts },
+      props: { categories, sortPosts, fetchPosts },
       closeModal,
       openModal,
       handleMenuItemClick,
@@ -132,7 +132,7 @@ function PostCards({ posts }) {
               </span>
               <span>
                 <Link to={`/${post.category}/${post.id}`} style={linkStyle}>
-                  Read More <Icon name="angle double right" />
+                  Read More<Icon name="angle double right" />
                 </Link>
               </span>
             </Card.Content>
