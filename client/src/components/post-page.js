@@ -115,7 +115,7 @@ class PostPage extends Component {
             <Grid>
               <Grid.Column width={12}>
                 <Link to="/" className="all-posts-link">
-                  <Icon name="angle double left" /> All Posts
+                  <Icon name="angle double left" />All Posts
                 </Link>
                 <Header as="h2">{post.title}</Header>
                 {this.renderPostMeta(post)}

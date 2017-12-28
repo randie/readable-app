@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
+import PostForm from './post-form';
 import { fetchCategoriesAction, fetchPostsAction, sortPostsAction } from '../actions';
 import { Button, Card, Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
@@ -17,7 +18,12 @@ const linkStyle = {
 
 // This is a private component used only by the HomePage component
 class MenuBar extends Component {
-  state = { activeItem: 'all' };
+  state = { activeItem: 'all', open: false };
+
+  openModal = () => this.setState({ open: true });
+  closeModal = () => this.setState({ open: false });
+
+  resetActiveCategory = () => this.setState({ activeItem: 'all' });
 
   handleMenuItemClick = location => (event, { name }) => {
     this.setState({ activeItem: name });
@@ -30,50 +36,60 @@ class MenuBar extends Component {
 
   componentDidMount() {
     this.props.fetchCategories();
-    this.setState({ activeItem: this.props.match.params.category });
+    this.setState({ activeItem: this.props.match.params.category || 'all' });
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.match.url !== prevProps.match.url) {
-      this.setState({ activeItem: this.props.match.params.category });
+      this.setState({ activeItem: this.props.match.params.category || 'all' });
     }
   }
 
   render() {
-    const { activeItem } = this.state;
-    const { categories, sortPosts } = this.props;
+    const {
+      state: { activeItem, open },
+      props: { categories, sortPosts, fetchPosts },
+      closeModal,
+      openModal,
+      handleMenuItemClick,
+      resetActiveCategory,
+    } = this;
+
     return (
-      <Menu style={menuBarStyle} size="tiny">
-        <Menu.Item
-          name="all"
-          active={!this.props.match.params.category}
-          onClick={this.handleMenuItemClick('/')}
+      <div>
+        <Menu style={menuBarStyle} size="tiny">
+          {categories.map(category => (
+            <Menu.Item
+              name={category.name}
+              active={category.name === activeItem}
+              onClick={handleMenuItemClick(`/${category.path}`)}
+              key={category.name}
+            />
+          ))}
+
+          <Menu.Menu position="right">
+            <Dropdown item text="Sort by">
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => sortPosts('timestamp')}>date</Dropdown.Item>
+                <Dropdown.Item onClick={() => sortPosts('voteScore')}>votes</Dropdown.Item>
+                <Dropdown.Item disabled>author</Dropdown.Item>
+                <Dropdown.Item disabled>title</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+
+            <Menu.Item>
+              <Button primary content="New Post" onClick={openModal} />
+            </Menu.Item>
+          </Menu.Menu>
+        </Menu>
+
+        <PostForm
+          open={open}
+          closeModal={closeModal}
+          resetActiveCategory={resetActiveCategory}
+          refetchPosts={fetchPosts}
         />
-
-        {categories.map(category => (
-          <Menu.Item
-            name={category.name}
-            active={category.name === activeItem}
-            onClick={this.handleMenuItemClick(`/${category.path}`)}
-            key={category.name}
-          />
-        ))}
-
-        <Menu.Menu position="right">
-          <Dropdown item text="Sort by">
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => sortPosts('timestamp')}>date</Dropdown.Item>
-              <Dropdown.Item onClick={() => sortPosts('voteScore')}>votes</Dropdown.Item>
-              <Dropdown.Item disabled>author</Dropdown.Item>
-              <Dropdown.Item disabled>title</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-
-          <Menu.Item>
-            <Button primary content="New Post" onClick={() => window.alert('new post')} />
-          </Menu.Item>
-        </Menu.Menu>
-      </Menu>
+      </div>
     );
   }
 }
@@ -116,7 +132,7 @@ function PostCards({ posts }) {
               </span>
               <span>
                 <Link to={`/${post.category}/${post.id}`} style={linkStyle}>
-                  Read More <Icon name="angle double right" />
+                  Read More<Icon name="angle double right" />
                 </Link>
               </span>
             </Card.Content>
@@ -137,19 +153,15 @@ class HomePage extends Component {
   };
 
   componentDidMount() {
-    this.fetchDataForPage();
+    const { fetchPosts, match } = this.props;
+    fetchPosts(match.params.category);
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.match.url !== prevProps.match.url) {
-      this.fetchDataForPage();
+    const { fetchPosts, match } = this.props;
+    if (match.url !== prevProps.match.url) {
+      fetchPosts(match.params.category);
     }
-  }
-
-  fetchDataForPage() {
-    // TODO: Should these 2 action creators be combined into 1?
-    this.props.fetchPosts(this.props.match.params.category);
-    this.props.sortPosts('voteScore');
   }
 
   render() {
@@ -162,7 +174,10 @@ class HomePage extends Component {
   }
 }
 
-const mapStateToProps = ({ categories, posts }) => ({ categories, posts });
+const mapStateToProps = ({ categories, posts }) => ({
+  categories: [{ name: 'all', path: '' }, ...categories],
+  posts,
+});
 
 const mapDispatchToProps = dispatch => ({
   fetchCategories: () => dispatch(fetchCategoriesAction()),

@@ -1,5 +1,5 @@
-import api from '../utils/api';
 import uuidv4 from 'uuid/v4';
+import api from '../utils/api';
 
 export const CREATE_COMMENT = 'CREATE_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';
