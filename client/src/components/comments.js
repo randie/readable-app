@@ -46,12 +46,7 @@ class PostComment extends Component {
           <Button icon="trash outline" onClick={() => this.deleteComment(comment.id)} />
         </Button.Group>
         <Divider />
-        <CommentForm
-          open={open}
-          closeModal={closeModal}
-          comment={comment}
-          refetchPost={refetchPost}
-        />
+        <CommentForm open={open} closeModal={closeModal} comment={comment} />
       </Comment>
     );
   }

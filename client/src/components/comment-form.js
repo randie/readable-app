@@ -118,8 +118,7 @@ const CommentFormik = withFormik({
   handleSubmit: (values, params) => {
     const { props, setSubmitting, resetForm } = params;
 
-    const refreshPost = () => {
-      props.refetchPost();
+    const closeCommentForm = () => {
       props.closeModal();
       setSubmitting(false);
       resetForm();
@@ -132,14 +131,14 @@ const CommentFormik = withFormik({
         body: values.body,
         author: values.author,
       };
-      props.createComment(commentData).then(result => refreshPost(result));
+      props.createComment(commentData).then(result => closeCommentForm(result));
     } else {
       commentData = {
         commentId: props.comment.id,
         body: values.body,
         author: values.author,
       };
-      props.editComment(commentData).then(result => refreshPost(result));
+      props.editComment(commentData).then(result => closeCommentForm(result));
     }
   },
 })(CommentForm);
