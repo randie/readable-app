@@ -47,7 +47,7 @@ class CommentForm extends Component {
     } = this.props;
 
     const title = isEmpty(comment) ? 'Add Comment' : 'Edit Comment';
-    const labels = this.getFormLabels(errors, touched, 'comment', 'author');
+    const labels = this.getFormLabels(errors, touched, 'body', 'author');
 
     return (
       <Modal
@@ -61,10 +61,10 @@ class CommentForm extends Component {
         <Modal.Content>
           <Form onSubmit={handleSubmit} loading={isSubmitting}>
             <Form.Field>
-              <label>{labels.comment}</label>
+              <label>{labels.body}</label>
               <TextArea
-                name="comment"
-                value={values['comment']}
+                name="body"
+                value={values['body']}
                 placeholder="Write your comment here"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -106,10 +106,12 @@ class CommentForm extends Component {
 }
 
 const CommentFormik = withFormik({
-  mapPropsToValues: ({ comment = {} }) => ({ comment: comment.body, author: comment.author }),
+  mapPropsToValues: ({ comment = { body: '', author: '' } }) => {
+    return { body: comment.body, author: comment.author };
+  },
 
   validationSchema: Yup.object().shape({
-    comment: Yup.string().required('Comment is required'),
+    body: Yup.string().required('Body is required'),
     author: Yup.string().required('Author is required'),
   }),
 
@@ -127,14 +129,14 @@ const CommentFormik = withFormik({
     if (isEmpty(props.comment)) {
       commentData = {
         parentId: props.post.id,
-        body: values.comment,
+        body: values.body,
         author: values.author,
       };
       props.createComment(commentData).then(result => refreshPost(result));
     } else {
       commentData = {
         commentId: props.comment.id,
-        body: values.comment,
+        body: values.body,
         author: values.author,
       };
       props.editComment(commentData).then(result => refreshPost(result));
