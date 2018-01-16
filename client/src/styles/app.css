@@ -24,7 +24,7 @@ body {
 
 .post-meta span + span,
 .ui.card .content span + span {
-  margin-left: 1.5rem;
+  margin-left: 1rem;
 }
 
 .post-meta {

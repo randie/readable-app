@@ -10,7 +10,6 @@ const FETCH_POSTS_FULFILLED = `${FETCH_POSTS}_FULFILLED`;
 function posts(state = [], action) {
   switch (action.type) {
     case CREATE_POST_FULFILLED:
-      debugger;
       return orderBy([action.payload, ...state], ['timestamp'], ['desc']);
 
     case FETCH_POSTS_FULFILLED:

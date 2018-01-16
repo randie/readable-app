@@ -16,7 +16,7 @@ const linkStyle = {
   float: 'right',
 };
 
-// This is a private component used only by the HomePage component
+// This is a private component used only by the HomePage component below
 class MenuBar extends Component {
   state = { activeItem: 'all', open: false };
 
@@ -94,7 +94,7 @@ class MenuBar extends Component {
   }
 }
 
-// This is a private component used only by the HomePage component
+// This is a private component used only by the HomePage component below
 function PostCards({ posts }) {
   return (
     (isEmpty(posts) && 'No posts found.') || (

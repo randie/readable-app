@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { capitalize } from 'lodash';
 import { withFormik } from 'formik';
 import Yup from 'yup';
+import { isEmpty } from 'lodash';
 import { Button, Form, Input, Modal, TextArea } from 'semantic-ui-react';
-import { createCommentAction } from '../actions';
+import { createCommentAction, editCommentAction } from '../actions';
 
 class CommentForm extends Component {
   closeMe = () => {
@@ -12,6 +13,12 @@ class CommentForm extends Component {
     closeModal();
     handleReset();
   };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.comment !== this.props.comment) {
+      this.props.resetForm(nextProps);
+    }
+  }
 
   getFormLabels(errors, touched, ...fields) {
     const labels = {};
@@ -29,6 +36,7 @@ class CommentForm extends Component {
   render() {
     const {
       open,
+      comment,
       values,
       touched,
       errors,
@@ -38,6 +46,7 @@ class CommentForm extends Component {
       handleSubmit,
     } = this.props;
 
+    const title = isEmpty(comment) ? 'Add Comment' : 'Edit Comment';
     const labels = this.getFormLabels(errors, touched, 'comment', 'author');
 
     return (
@@ -48,7 +57,7 @@ class CommentForm extends Component {
         onClose={this.closeMe}
         size="small"
       >
-        <Modal.Header>Add Comment</Modal.Header>
+        <Modal.Header>{title}</Modal.Header>
         <Modal.Content>
           <Form onSubmit={handleSubmit} loading={isSubmitting}>
             <Form.Field>
@@ -97,7 +106,7 @@ class CommentForm extends Component {
 }
 
 const CommentFormik = withFormik({
-  mapPropsToValues: () => ({ comment: '', author: '' }),
+  mapPropsToValues: ({ comment = {} }) => ({ comment: comment.body, author: comment.author }),
 
   validationSchema: Yup.object().shape({
     comment: Yup.string().required('Comment is required'),
@@ -105,20 +114,31 @@ const CommentFormik = withFormik({
   }),
 
   handleSubmit: (values, params) => {
-    const { setSubmitting, resetForm, props, setTouched, setErrors } = params;
-    const commentData = {
-      parentId: props.post.id,
-      body: values.comment,
-      author: values.author,
-    };
-    props.createComment(commentData).then(result => {
+    const { props, setSubmitting, resetForm } = params;
+
+    const refreshPost = () => {
       props.refetchPost();
       props.closeModal();
       setSubmitting(false);
-      setTouched({ author: false, comment: false });
-      setErrors({ author: null, comment: null });
       resetForm();
-    });
+    };
+
+    let commentData;
+    if (isEmpty(props.comment)) {
+      commentData = {
+        parentId: props.post.id,
+        body: values.comment,
+        author: values.author,
+      };
+      props.createComment(commentData).then(result => refreshPost(result));
+    } else {
+      commentData = {
+        commentId: props.comment.id,
+        body: values.comment,
+        author: values.author,
+      };
+      props.editComment(commentData).then(result => refreshPost(result));
+    }
   },
 })(CommentForm);
 
@@ -127,6 +147,8 @@ const mapStateToProps = ({ post }) => ({ post });
 const mapDispatchToProps = dispatch => ({
   createComment: ({ parentId, body, author }) =>
     dispatch(createCommentAction({ parentId, body, author })),
+  editComment: ({ commentId, body, author }) =>
+    dispatch(editCommentAction({ commentId, body, author })),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CommentFormik);
