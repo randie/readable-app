@@ -24,7 +24,7 @@ body {
 
 .post-meta span + span,
 .ui.card .content span + span {
-  margin-left: 1.5rem;
+  margin-left: 1rem;
 }
 
 .post-meta {
@@ -44,8 +44,9 @@ body {
   text-align: left;
 }
 
-.ui.comments .comment .metadata span {
-  margin-left: 1rem;
+.ui.comments .comment .metadata {
+  margin-left: 0;
+  margin-bottom: 0.5rem;
 }
 
 .ui.comments .comment .actions {

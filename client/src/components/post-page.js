@@ -87,8 +87,7 @@ class PostPage extends Component {
 
   renderPostControls = post => (
     <Button.Group basic vertical labeled icon floated="right" className="edit-delete-thumbs">
-      <Button icon="edit" content="Edit" onClick={() => window.alert('edit post')} />
-      <Button icon="trash outline" content="Delete" onClick={this.deletePost} />
+      <Button icon="commenting outline" content="Comment" onClick={this.openModal} />
       <Button
         icon="thumbs outline up"
         content="Upvote"
@@ -99,7 +98,8 @@ class PostPage extends Component {
         content="Downvote"
         onClick={() => this.props.voteForPost(post.id, 'downVote')}
       />
-      <Button icon="commenting outline" content="Comment" onClick={this.openModal} />
+      <Button icon="edit" content="Edit" onClick={() => window.alert('edit post')} />
+      <Button icon="trash outline" content="Delete" onClick={this.deletePost} />
     </Button.Group>
   );
 

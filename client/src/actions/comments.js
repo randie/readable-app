@@ -3,6 +3,7 @@ import api from '../utils/api';
 
 export const CREATE_COMMENT = 'CREATE_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';
+export const EDIT_COMMENT = 'EDIT_COMMENT';
 export const FETCH_COMMENTS = 'FETCH_COMMENTS';
 export const VOTE_FOR_COMMENT = 'VOTE_FOR_COMMENT';
 
@@ -23,6 +24,13 @@ export function deleteCommentAction(commentId) {
   const url = `/comments/${commentId}`;
   const payload = api.delete(url).then(response => response.data);
   return { type: DELETE_COMMENT, payload };
+}
+
+export function editCommentAction({ commentId, body, author }) {
+  const url = `/comments/${commentId}`;
+  const data = { body, author, timestamp: Date.now() };
+  const payload = api.put(url, data).then(response => response.data);
+  return { type: EDIT_COMMENT, payload };
 }
 
 export function fetchCommentsAction(postId) {

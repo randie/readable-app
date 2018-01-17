@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { capitalize } from 'lodash';
 import { withFormik } from 'formik';
 import Yup from 'yup';
+import { isEmpty } from 'lodash';
 import { Button, Form, Input, Modal, TextArea } from 'semantic-ui-react';
-import { createCommentAction } from '../actions';
+import { createCommentAction, editCommentAction } from '../actions';
 
 class CommentForm extends Component {
   closeMe = () => {
@@ -12,6 +13,12 @@ class CommentForm extends Component {
     closeModal();
     handleReset();
   };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.comment !== this.props.comment) {
+      this.props.resetForm(nextProps);
+    }
+  }
 
   getFormLabels(errors, touched, ...fields) {
     const labels = {};
@@ -29,6 +36,7 @@ class CommentForm extends Component {
   render() {
     const {
       open,
+      comment,
       values,
       touched,
       errors,
@@ -38,7 +46,8 @@ class CommentForm extends Component {
       handleSubmit,
     } = this.props;
 
-    const labels = this.getFormLabels(errors, touched, 'comment', 'author');
+    const title = isEmpty(comment) ? 'Add Comment' : 'Edit Comment';
+    const labels = this.getFormLabels(errors, touched, 'body', 'author');
 
     return (
       <Modal
@@ -48,14 +57,14 @@ class CommentForm extends Component {
         onClose={this.closeMe}
         size="small"
       >
-        <Modal.Header>Add Comment</Modal.Header>
+        <Modal.Header>{title}</Modal.Header>
         <Modal.Content>
           <Form onSubmit={handleSubmit} loading={isSubmitting}>
             <Form.Field>
-              <label>{labels.comment}</label>
+              <label>{labels.body}</label>
               <TextArea
-                name="comment"
-                value={values['comment']}
+                name="body"
+                value={values['body']}
                 placeholder="Write your comment here"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -97,28 +106,40 @@ class CommentForm extends Component {
 }
 
 const CommentFormik = withFormik({
-  mapPropsToValues: () => ({ comment: '', author: '' }),
+  mapPropsToValues: ({ comment = { body: '', author: '' } }) => {
+    return { body: comment.body, author: comment.author };
+  },
 
   validationSchema: Yup.object().shape({
-    comment: Yup.string().required('Comment is required'),
+    body: Yup.string().required('Body is required'),
     author: Yup.string().required('Author is required'),
   }),
 
   handleSubmit: (values, params) => {
-    const { setSubmitting, resetForm, props, setTouched, setErrors } = params;
-    const commentData = {
-      parentId: props.post.id,
-      body: values.comment,
-      author: values.author,
-    };
-    props.createComment(commentData).then(result => {
-      props.refetchPost();
+    const { props, setSubmitting, resetForm } = params;
+
+    const closeCommentForm = () => {
       props.closeModal();
       setSubmitting(false);
-      setTouched({ author: false, comment: false });
-      setErrors({ author: null, comment: null });
       resetForm();
-    });
+    };
+
+    let commentData;
+    if (isEmpty(props.comment)) {
+      commentData = {
+        parentId: props.post.id,
+        body: values.body,
+        author: values.author,
+      };
+      props.createComment(commentData).then(result => closeCommentForm(result));
+    } else {
+      commentData = {
+        commentId: props.comment.id,
+        body: values.body,
+        author: values.author,
+      };
+      props.editComment(commentData).then(result => closeCommentForm(result));
+    }
   },
 })(CommentForm);
 
@@ -127,6 +148,8 @@ const mapStateToProps = ({ post }) => ({ post });
 const mapDispatchToProps = dispatch => ({
   createComment: ({ parentId, body, author }) =>
     dispatch(createCommentAction({ parentId, body, author })),
+  editComment: ({ commentId, body, author }) =>
+    dispatch(editCommentAction({ commentId, body, author })),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CommentFormik);
