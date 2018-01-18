@@ -3,6 +3,7 @@ import api from '../utils/api';
 
 export const CREATE_POST = 'CREATE_POST';
 export const DELETE_POST = 'DELETE_POST';
+export const EDIT_POST = 'EDIT_POST';
 export const FETCH_POST = 'FETCH_POST';
 export const VOTE_FOR_POST = 'VOTE_FOR_POST';
 
@@ -17,6 +18,12 @@ export function deletePostAction(postId) {
   const url = `/posts/${postId}`;
   const payload = api.delete(url).then(response => response.data);
   return { type: DELETE_POST, payload };
+}
+
+export function editPostAction({ postId, post }) {
+  const url = `/posts/${postId}`;
+  const payload = api.put(url, post).then(response => response.data);
+  return { type: EDIT_POST, payload };
 }
 
 export function fetchPostAction(postId) {

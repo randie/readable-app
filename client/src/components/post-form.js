@@ -5,7 +5,7 @@ import { withFormik } from 'formik';
 import Yup from 'yup';
 import { isEmpty } from 'lodash';
 import { Button, Dropdown, Form, Input, Modal, TextArea } from 'semantic-ui-react';
-import { createPostAction, fetchCategoriesAction } from '../actions';
+import { createPostAction, editPostAction, fetchCategoriesAction } from '../actions';
 
 class PostForm extends Component {
   closeMe = () => {
@@ -175,7 +175,10 @@ const PostFormik = withFormik({
         resetForm();
       });
     } else {
-      window.alert('edit post');
+      props.editPost({ postId: props.post.id, post: values });
+      props.closeModal();
+      setSubmitting(false);
+      resetForm();
     }
   },
 })(PostForm);
@@ -184,6 +187,7 @@ const mapStateToProps = ({ categories }) => ({ categories });
 
 const mapDispatchToProps = dispatch => ({
   createPost: post => dispatch(createPostAction(post)),
+  editPost: ({ postId, post }) => dispatch(editPostAction({ postId, post })),
   fetchCategories: () => dispatch(fetchCategoriesAction()),
 });
 
