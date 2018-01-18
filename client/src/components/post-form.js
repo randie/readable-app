@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { capitalize } from 'lodash';
 import { withFormik } from 'formik';
 import Yup from 'yup';
+import { isEmpty } from 'lodash';
 import { Button, Dropdown, Form, Input, Modal, TextArea } from 'semantic-ui-react';
-import { createPostAction } from '../actions';
+import { createPostAction, fetchCategoriesAction } from '../actions';
 
 class PostForm extends Component {
   closeMe = () => {
@@ -13,6 +14,12 @@ class PostForm extends Component {
     handleReset();
   };
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.post !== this.props.post) {
+      this.props.resetForm(nextProps);
+    }
+  }
+
   handleCategoryChange = (event, data) => {
     this.props.setFieldValue('category', data.value);
   };
@@ -20,6 +27,10 @@ class PostForm extends Component {
   handleCategoryBlur = () => {
     this.props.setFieldTouched('category', true);
   };
+
+  componentDidMount() {
+    this.props.fetchCategories();
+  }
 
   getFormLabels(errors, touched, ...fields) {
     const labels = {};
@@ -37,6 +48,7 @@ class PostForm extends Component {
   render() {
     const {
       open,
+      post,
       categories,
       values,
       touched,
@@ -47,6 +59,7 @@ class PostForm extends Component {
       handleSubmit,
     } = this.props;
 
+    const title = isEmpty(post) ? 'Add Post' : 'Edit Post';
     const labels = this.getFormLabels(errors, touched, 'title', 'body', 'category', 'author');
 
     const categoryOptions = categories.map(({ name }) => {
@@ -61,7 +74,7 @@ class PostForm extends Component {
         onClose={this.closeMe}
         size="small"
       >
-        <Modal.Header>Add Post</Modal.Header>
+        <Modal.Header>{title}</Modal.Header>
         <Modal.Content>
           <Form onSubmit={handleSubmit}>
             <Form.Field>
@@ -69,7 +82,7 @@ class PostForm extends Component {
               <Input
                 type="text"
                 name="title"
-                value={values['title']}
+                value={values.title}
                 placeholder="Write your title here"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -79,7 +92,7 @@ class PostForm extends Component {
               <label>{labels.body}</label>
               <TextArea
                 name="body"
-                value={values['body']}
+                value={values.body}
                 placeholder="Write your content here"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -89,6 +102,7 @@ class PostForm extends Component {
             <Form.Field>
               <label>{labels.category}</label>
               <Dropdown
+                defaultValue={values.category}
                 placeholder="Select a category"
                 search
                 selection
@@ -102,7 +116,7 @@ class PostForm extends Component {
               <Input
                 type="text"
                 name="author"
-                value={values['author']}
+                value={values.author}
                 placeholder="Write your name here"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -132,7 +146,14 @@ class PostForm extends Component {
 }
 
 const PostFormik = withFormik({
-  mapPropsToValues: () => ({ title: '', body: '', category: '', author: '' }),
+  mapPropsToValues: ({ post = { title: '', body: '', category: '', author: '' } }) => {
+    return {
+      title: post.title,
+      body: post.body,
+      category: post.category,
+      author: post.author,
+    };
+  },
 
   validationSchema: Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -143,17 +164,19 @@ const PostFormik = withFormik({
 
   handleSubmit: (values, params) => {
     const { title, body, category, author } = values;
-    const { setSubmitting, resetForm, props, setTouched, setErrors } = params;
+    const { props, setSubmitting, resetForm } = params;
 
-    props.createPost({ title, body, category, author }).then(result => {
-      props.resetActiveCategory();
-      props.refetchPosts();
-      props.closeModal();
-      setSubmitting(false);
-      setTouched({ title: false, body: false, category: false, author: false });
-      setErrors({ title: null, body: null, category: null, author: null });
-      resetForm();
-    });
+    if (isEmpty(props.post)) {
+      props.createPost({ title, body, category, author }).then(result => {
+        props.resetActiveCategory();
+        props.refetchPosts();
+        props.closeModal();
+        setSubmitting(false);
+        resetForm();
+      });
+    } else {
+      window.alert('edit post');
+    }
   },
 })(PostForm);
 
@@ -161,6 +184,7 @@ const mapStateToProps = ({ categories }) => ({ categories });
 
 const mapDispatchToProps = dispatch => ({
   createPost: post => dispatch(createPostAction(post)),
+  fetchCategories: () => dispatch(fetchCategoriesAction()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PostFormik);

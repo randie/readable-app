@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
+import PostForm from './post-form';
 import Comments from './comments';
 import CommentForm from './comment-form';
 import { Button, Container, Divider, Grid, Header, Icon } from 'semantic-ui-react';
@@ -24,10 +25,13 @@ class PostPage extends Component {
     voteForPost: PropTypes.func.isRequired,
   };
 
-  state = { open: false };
+  state = { isOpenCommentForm: false, isOpenPostForm: false };
 
-  openModal = () => this.setState({ open: true });
-  closeModal = () => this.setState({ open: false });
+  openCommentForm = () => this.setState({ isOpenCommentForm: true });
+  closeCommentForm = () => this.setState({ isOpenCommentForm: false });
+
+  openPostForm = () => this.setState({ isOpenPostForm: true });
+  closePostForm = () => this.setState({ isOpenPostForm: false });
 
   componentDidMount() {
     this.fetchDataForPage();
@@ -87,7 +91,7 @@ class PostPage extends Component {
 
   renderPostControls = post => (
     <Button.Group basic vertical labeled icon floated="right" className="edit-delete-thumbs">
-      <Button icon="commenting outline" content="Comment" onClick={this.openModal} />
+      <Button icon="commenting outline" content="Comment" onClick={this.openCommentForm} />
       <Button
         icon="thumbs outline up"
         content="Upvote"
@@ -98,14 +102,19 @@ class PostPage extends Component {
         content="Downvote"
         onClick={() => this.props.voteForPost(post.id, 'downVote')}
       />
-      <Button icon="edit" content="Edit" onClick={() => window.alert('edit post')} />
+      <Button icon="edit" content="Edit" onClick={this.openPostForm} />
       <Button icon="trash outline" content="Delete" onClick={this.deletePost} />
     </Button.Group>
   );
 
   render() {
     const { post } = this.props;
-    const { state: { open }, closeModal, refetchPost } = this;
+    const {
+      state: { isOpenCommentForm, isOpenPostForm },
+      closeCommentForm,
+      refetchPost,
+      closePostForm,
+    } = this;
 
     return (
       <Container>
@@ -124,7 +133,12 @@ class PostPage extends Component {
               </Grid.Column>
               <Grid.Column width={4}>{this.renderPostControls(post)}</Grid.Column>
             </Grid>
-            <CommentForm open={open} closeModal={closeModal} refetchPost={refetchPost} />
+            <CommentForm
+              open={isOpenCommentForm}
+              closeModal={closeCommentForm}
+              refetchPost={refetchPost}
+            />
+            <PostForm open={isOpenPostForm} closeModal={closePostForm} post={post} />
           </div>
         )}
       </Container>
