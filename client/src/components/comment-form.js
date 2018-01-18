@@ -64,7 +64,7 @@ class CommentForm extends Component {
               <label>{labels.body}</label>
               <TextArea
                 name="body"
-                value={values['body']}
+                value={values.body}
                 placeholder="Write your comment here"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -76,7 +76,7 @@ class CommentForm extends Component {
               <Input
                 type="text"
                 name="author"
-                value={values['author']}
+                value={values.author}
                 placeholder="Write your name here"
                 onChange={handleChange}
                 onBlur={handleBlur}

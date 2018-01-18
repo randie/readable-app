@@ -22,7 +22,7 @@ class PostComment extends Component {
   };
 
   render() {
-    const { closeModal, state: { open }, props: { comment, voteForComment, refetchPost } } = this;
+    const { closeModal, state: { open }, props: { comment, voteForComment } } = this;
 
     return (
       <Comment>
