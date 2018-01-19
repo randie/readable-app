@@ -133,11 +133,7 @@ class PostPage extends Component {
               </Grid.Column>
               <Grid.Column width={4}>{this.renderPostControls(post)}</Grid.Column>
             </Grid>
-            <CommentForm
-              open={isOpenCommentForm}
-              closeModal={closeCommentForm}
-              refetchPost={refetchPost}
-            />
+            <CommentForm open={isOpenCommentForm} closeModal={closeCommentForm} refetchPost={refetchPost} />
             <PostForm open={isOpenPostForm} closeModal={closePostForm} post={post} />
           </div>
         )}

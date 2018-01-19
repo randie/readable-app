@@ -16,7 +16,7 @@ class PostForm extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.post !== this.props.post) {
-      this.props.resetForm(nextProps);
+      this.props.resetForm(nextProps.post);
     }
   }
 
@@ -35,12 +35,8 @@ class PostForm extends Component {
   getFormLabels(errors, touched, ...fields) {
     const labels = {};
     fields.forEach(field => {
-      labels[field] =
-        !errors[field] || !touched[field] ? (
-          capitalize(field)
-        ) : (
-          <span style={{ color: 'red' }}>{errors[field]}</span>
-        );
+      labels[field] = !errors[field] || !touched[field] ?
+        (capitalize(field)) : (<span style={{ color: 'red' }}>{errors[field]}</span>);
     });
     return labels;
   }
@@ -171,14 +167,13 @@ const PostFormik = withFormik({
         props.resetActiveCategory();
         props.refetchPosts();
         props.closeModal();
-        setSubmitting(false);
         resetForm();
       });
     } else {
-      props.editPost({ postId: props.post.id, post: values });
-      props.closeModal();
-      setSubmitting(false);
-      resetForm();
+      props.editPost({ postId: props.post.id, post: values }).then(result => {
+        props.closeModal();
+        setSubmitting(false);
+      });
     }
   },
 })(PostForm);
