@@ -8,14 +8,6 @@ import PostForm from './post-form';
 import { fetchCategoriesAction, fetchPostsAction, sortPostsAction } from '../actions';
 import { Button, Card, Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
-const menuBarStyle = {
-  marginBottom: '3rem',
-};
-
-const linkStyle = {
-  float: 'right',
-};
-
 // This is a private component used only by the HomePage component below
 class MenuBar extends Component {
   state = { activeItem: 'all', open: false };
@@ -57,7 +49,7 @@ class MenuBar extends Component {
 
     return (
       <div>
-        <Menu style={menuBarStyle} size="tiny">
+        <Menu size="mini">
           {categories.map(category => (
             <Menu.Item
               name={category.name}
@@ -70,10 +62,11 @@ class MenuBar extends Component {
           <Menu.Menu position="right">
             <Dropdown item text="Sort by">
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => sortPosts('timestamp')}>date</Dropdown.Item>
-                <Dropdown.Item onClick={() => sortPosts('voteScore')}>votes</Dropdown.Item>
-                <Dropdown.Item disabled>author</Dropdown.Item>
-                <Dropdown.Item disabled>title</Dropdown.Item>
+                <Dropdown.Item onClick={() => sortPosts('timestamp', 'desc')}>Newest</Dropdown.Item>
+                <Dropdown.Item onClick={() => sortPosts('timestamp', 'asc')}>Oldest</Dropdown.Item>
+                <Dropdown.Item onClick={() => sortPosts('voteScore', 'desc')}>Most Votes</Dropdown.Item>
+                <Dropdown.Item onClick={() => sortPosts('author', 'asc')}>Author</Dropdown.Item>
+                <Dropdown.Item onClick={() => sortPosts('title', 'asc')}>Title</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
 
@@ -131,8 +124,8 @@ function PostCards({ posts }) {
                 {post.commentCount}
               </span>
               <span>
-                <Link to={`/${post.category}/${post.id}`} style={linkStyle}>
-                  Read More<Icon name="angle double right" />
+                <Link to={`/${post.category}/${post.id}`} className="read-more">
+                  Read<Icon name="angle double right" />
                 </Link>
               </span>
             </Card.Content>
@@ -182,7 +175,7 @@ const mapStateToProps = ({ categories, posts }) => ({
 const mapDispatchToProps = dispatch => ({
   fetchCategories: () => dispatch(fetchCategoriesAction()),
   fetchPosts: category => dispatch(fetchPostsAction(category)),
-  sortPosts: sortBy => dispatch(sortPostsAction(sortBy)),
+  sortPosts: (sortBy, order) => dispatch(sortPostsAction(sortBy, order)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

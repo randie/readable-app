@@ -12,7 +12,7 @@ function posts(state = [], action) {
       return orderBy(action.payload, ['timestamp'], ['desc']);
 
     case SORT_POSTS:
-      return orderBy([...state], [action.sortBy], ['desc']);
+      return orderBy([...state], [action.sortBy], [action.order]);
 
     default:
       return state;

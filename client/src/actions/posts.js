@@ -9,6 +9,6 @@ export function fetchPostsAction(category) {
   return { type: FETCH_POSTS, payload };
 }
 
-export function sortPostsAction(sortBy) {
-  return { type: SORT_POSTS, sortBy };
+export function sortPostsAction(sortBy, order) {
+  return { type: SORT_POSTS, sortBy, order };
 }

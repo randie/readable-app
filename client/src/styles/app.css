@@ -16,15 +16,28 @@ body {
 /* override semantic-ui styles here for now */
 
 .ui .menu .item,
-.ui .post-body,
-.ui .all-posts-link,
-.ui.card .description {
+.ui .post-body {
   font-size: 1rem;
+}
+
+.ui.mini.menu {
+  margin-bottom: 3rem;
+  height: 2.8rem;
+  line-height: 0;
+}
+
+.ui.mini.menu button {
+  height: 2rem;
+  line-height: 0;
 }
 
 .post-meta span + span,
 .ui.card .content span + span {
   margin-left: 1rem;
+}
+
+.ui.card .read-more {
+  float: right;
 }
 
 .post-meta {
