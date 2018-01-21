@@ -23,11 +23,11 @@ body {
 .ui.mini.menu {
   margin-bottom: 3rem;
   height: 2.8rem;
-  line-height: 0;
+  /* line-height: 0; */
 }
 
 .ui.mini.menu button {
-  height: 2rem;
+  height: 2.2rem;
   line-height: 0;
 }
 

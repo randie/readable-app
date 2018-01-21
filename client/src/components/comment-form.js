@@ -112,7 +112,7 @@ const CommentFormik = withFormik({
   }),
 
   handleSubmit: (values, params) => {
-    const { props, setSubmitting, resetForm } = params;
+    const { props, resetForm } = params;
 
     const closeCommentForm = () => {
       props.closeModal();
