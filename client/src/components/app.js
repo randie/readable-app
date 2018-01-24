@@ -16,6 +16,7 @@ export default () => (
           <Route exact path="/" component={HomePage} />
           <Route exact path="/:category" component={HomePage} />
           <Route exact path="/:category/:postId" component={PostPage} />
+          <Route exact path="/:category/:postId/:action" component={PostPage} />
           <Route path="*" component={NotFoundPage} />
         </Switch>
       </Layout>

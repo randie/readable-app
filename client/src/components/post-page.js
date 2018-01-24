@@ -35,6 +35,9 @@ class PostPage extends Component {
 
   componentDidMount() {
     this.fetchDataForPage();
+    if (this.props.match.params.action === 'edit') {
+      this.openPostForm();
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -50,8 +53,8 @@ class PostPage extends Component {
   }
 
   refetchPost = () => {
-    // NB: The /comments api doesn't seem to automatically update the
-    // post's commentCount when a comment is added or deleted from it.
+    // NB: The /comments api does not automatically update the post's
+    // commentCount when a comment is added or deleted from it.
     // In order to see the new commentCount on this page, the post has
     // to refresh itself. This is a way to manually make the post fetch
     // its data again. [2017-12-24]

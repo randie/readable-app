@@ -96,78 +96,86 @@ class MenuBar extends Component {
 }
 
 // This is a private component used only by the HomePage component below
-//function PostCards({ posts, voteForPost }) {
-function PostCards(props) {
-  return (
-    (isEmpty(props.posts) && 'No posts found.') || (
-      <Card.Group itemsPerRow={3}>
-        {props.posts.map(post => (
-          <Card centered key={post.id}>
-            <Card.Content>
-              <Card.Header>
-                <Link to={`/${post.category}/${post.id}`}>{post.title}</Link>
-              </Card.Header>
-            </Card.Content>
-            <Card.Content extra>
-              <span>
-                <Icon name="user" />
-                {post.author}
-              </span>
-              <span>
-                <Icon name="calendar outline" />
-                {moment(post.timestamp).format('lll')}
-              </span>
-            </Card.Content>
-            <Card.Content>
-              {post.body.slice(0, 200)}
-              <div className="post-controls">
-                <Button.Group basic size="tiny">
-                  <Button
-                    icon="thumbs outline up"
-                    onClick={() => {
-                      props.voteForPost(post.id, 'upVote').then(() => props.fetchPosts(props.activeCategory));
-                    }}
-                  />
-                  <Button
-                    icon="thumbs outline down"
-                    onClick={() => {
-                      props.voteForPost(post.id, 'downVote').then(() => props.fetchPosts(props.activeCategory));
-                    }}
-                  />
-                  <Button icon="edit" onClick={() => window.alert('edit post')} />
-                  <Button
-                    icon="trash outline"
-                    onClick={() => {
-                      props.deletePost(post.id).then(() => props.fetchPosts(props.activeCategory));
-                    }}
-                  />
-                </Button.Group>
-              </div>
-            </Card.Content>
-            <Card.Content>
-              <span>
-                <Icon disabled name="tag" />
-                {post.category}
-              </span>
-              <span>
-                <Icon disabled name="thumbs up" />
-                {post.voteScore}
-              </span>
-              <span>
-                <Icon disabled name="comment" />
-                {post.commentCount}
-              </span>
-              <span>
-                <Link to={`/${post.category}/${post.id}`} className="read-more">
-                  Read<Icon name="angle double right" />
-                </Link>
-              </span>
-            </Card.Content>
-          </Card>
-        ))}
-      </Card.Group>
-    )
-  );
+class PostCards extends Component {
+  editPost = (location) => {
+    this.props.history.push(location);
+  };
+
+  render() {
+    const { props } = this;
+    return (
+      (isEmpty(props.posts) && 'No posts found.') || (
+        <Card.Group itemsPerRow={3}>
+          {props.posts.map(post => (
+            <Card centered key={post.id}>
+              <Card.Content>
+                <Card.Header>
+                  <Link to={`/${post.category}/${post.id}`}>{post.title}</Link>
+                </Card.Header>
+              </Card.Content>
+              <Card.Content extra>
+                <span>
+                  <Icon name="user" />
+                  {post.author}
+                </span>
+                <span>
+                  <Icon name="calendar outline" />
+                  {moment(post.timestamp).format('lll')}
+                </span>
+              </Card.Content>
+              <Card.Content>
+                <div className="post-body">
+                  {post.body.slice(0, 200)}
+                </div>
+                <div className="post-controls">
+                  <Button.Group basic size="tiny">
+                    <Button
+                      icon="thumbs outline up"
+                      onClick={() => {
+                        props.voteForPost(post.id, 'upVote').then(() => props.fetchPosts(props.activeCategory));
+                      }}
+                    />
+                    <Button
+                      icon="thumbs outline down"
+                      onClick={() => {
+                        props.voteForPost(post.id, 'downVote').then(() => props.fetchPosts(props.activeCategory));
+                      }}
+                    />
+                    <Button icon="edit" onClick={() => this.editPost(`/${post.category}/${post.id}/edit`)} />
+                    <Button
+                      icon="trash outline"
+                      onClick={() => {
+                        props.deletePost(post.id).then(() => props.fetchPosts(props.activeCategory));
+                      }}
+                    />
+                  </Button.Group>
+                </div>
+              </Card.Content>
+              <Card.Content>
+                <span>
+                  <Icon disabled name="tag" />
+                  {post.category}
+                </span>
+                <span>
+                  <Icon disabled name="thumbs up" />
+                  {post.voteScore}
+                </span>
+                <span>
+                  <Icon disabled name="comment" />
+                  {post.commentCount}
+                </span>
+                <span>
+                  <Link to={`/${post.category}/${post.id}`} className="read-more">
+                    Read<Icon name="angle double right" />
+                  </Link>
+                </span>
+              </Card.Content>
+            </Card>
+          ))}
+        </Card.Group>
+      )
+    );
+  }
 }
 
 class HomePage extends Component {
