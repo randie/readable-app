@@ -4,7 +4,7 @@ export const FETCH_POSTS = 'FETCH_POSTS';
 export const SORT_POSTS = 'SORT_POSTS';
 
 export function fetchPostsAction(category) {
-  const url = !category ? '/posts' : `/${category}/posts`;
+  const url = !category || category === 'all' ? '/posts' : `/${category}/posts`;
   const payload = api.get(url).then(response => response.data);
   return { type: FETCH_POSTS, payload };
 }

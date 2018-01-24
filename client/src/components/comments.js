@@ -63,9 +63,7 @@ class Comments extends Component {
       !isEmpty(comments) && (
         <div>
           <Comment.Group>
-            <Divider horizontal section>
-              Comments
-            </Divider>
+            <Divider horizontal section content="Comments" />
             {comments.map(comment => (
               <PostComment key={comment.id} comment={comment} {...this.props} />
             ))}
