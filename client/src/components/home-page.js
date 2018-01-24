@@ -5,8 +5,15 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import PostForm from './post-form';
-import { fetchCategoriesAction, fetchPostsAction, sortPostsAction } from '../actions';
 import { Button, Card, Container, Dropdown, Icon, Menu } from 'semantic-ui-react';
+
+import {
+  deletePostAction,
+  fetchCategoriesAction,
+  fetchPostsAction,
+  sortPostsAction,
+  voteForPostAction
+} from '../actions';
 
 // This is a private component used only by the HomePage component below
 class MenuBar extends Component {
@@ -19,6 +26,7 @@ class MenuBar extends Component {
 
   handleMenuItemClick = location => (event, { name }) => {
     this.setState({ activeItem: name });
+    this.props.setActiveCategory(name);
 
     // NB: Making a Menu.Item Link to the new location works
     // but the UI "blinks" when location changes, so I'm doing
@@ -88,11 +96,12 @@ class MenuBar extends Component {
 }
 
 // This is a private component used only by the HomePage component below
-function PostCards({ posts }) {
+//function PostCards({ posts, voteForPost }) {
+function PostCards(props) {
   return (
-    (isEmpty(posts) && 'No posts found.') || (
+    (isEmpty(props.posts) && 'No posts found.') || (
       <Card.Group itemsPerRow={3}>
-        {posts.map(post => (
+        {props.posts.map(post => (
           <Card centered key={post.id}>
             <Card.Content>
               <Card.Header>
@@ -109,7 +118,32 @@ function PostCards({ posts }) {
                 {moment(post.timestamp).format('lll')}
               </span>
             </Card.Content>
-            <Card.Content description={post.body.slice(0, 200)} />
+            <Card.Content>
+              {post.body.slice(0, 200)}
+              <div className="post-controls">
+                <Button.Group basic size="tiny">
+                  <Button
+                    icon="thumbs outline up"
+                    onClick={() => {
+                      props.voteForPost(post.id, 'upVote').then(() => props.fetchPosts(props.activeCategory));
+                    }}
+                  />
+                  <Button
+                    icon="thumbs outline down"
+                    onClick={() => {
+                      props.voteForPost(post.id, 'downVote').then(() => props.fetchPosts(props.activeCategory));
+                    }}
+                  />
+                  <Button icon="edit" onClick={() => window.alert('edit post')} />
+                  <Button
+                    icon="trash outline"
+                    onClick={() => {
+                      props.deletePost(post.id).then(() => props.fetchPosts(props.activeCategory));
+                    }}
+                  />
+                </Button.Group>
+              </div>
+            </Card.Content>
             <Card.Content>
               <span>
                 <Icon disabled name="tag" />
@@ -145,6 +179,10 @@ class HomePage extends Component {
     sortPosts: PropTypes.func.isRequired,
   };
 
+  state = { activeCategory: 'all' };
+
+  setActiveCategory = category => this.setState({ activeCategory: category });
+
   componentDidMount() {
     const { fetchPosts, match } = this.props;
     fetchPosts(match.params.category);
@@ -160,8 +198,8 @@ class HomePage extends Component {
   render() {
     return (
       <Container>
-        <MenuBar {...this.props} />
-        <PostCards posts={this.props.posts} />
+        <MenuBar {...this.props} setActiveCategory={this.setActiveCategory} />
+        <PostCards {...this.props} activeCategory={this.state.activeCategory} />
       </Container>
     );
   }
@@ -173,9 +211,11 @@ const mapStateToProps = ({ categories, posts }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  deletePost: postId => dispatch(deletePostAction(postId)),
   fetchCategories: () => dispatch(fetchCategoriesAction()),
   fetchPosts: category => dispatch(fetchPostsAction(category)),
   sortPosts: (sortBy, order) => dispatch(sortPostsAction(sortBy, order)),
+  voteForPost: (postId, voteType) => dispatch(voteForPostAction(postId, voteType)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
