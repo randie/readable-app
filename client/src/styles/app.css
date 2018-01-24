@@ -16,14 +16,14 @@ body {
 /* override semantic-ui styles here for now */
 
 .ui .menu .item,
-.ui .post-body {
+.ui .post-body,
+.ui .all-posts-link {
   font-size: 1rem;
 }
 
 .ui.mini.menu {
   margin-bottom: 3rem;
-  height: 2.8rem;
-  /* line-height: 0; */
+  height: 3rem;
 }
 
 .ui.mini.menu button {
@@ -57,6 +57,11 @@ body {
   text-align: left;
 }
 
+.ui .post-controls {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
 .ui.comments .comment .metadata {
   margin-left: 0;
   margin-bottom: 0.5rem;
@@ -82,4 +87,8 @@ body {
 
 .ui.form button:last-of-type {
   margin-right: 0;
+}
+
+.ui .post-body {
+  margin-bottom: 1rem;
 }
